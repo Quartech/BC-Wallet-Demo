@@ -2,7 +2,7 @@ ARG build_image=node:20-alpine
 ARG runtime_image=caddy:alpine
 
 # build stage
-FROM ${build_image} as build-stage
+FROM ${build_image} AS build-stage
 RUN apk add --no-cache maven openjdk17
 RUN npm -g install pnpm 
 WORKDIR /app
@@ -16,7 +16,7 @@ RUN pnpm --filter bc-wallet-openapi build:clean
 RUN pnpm --filter bc-wallet-demo-web build
 
 # production stage
-FROM ${runtime_image} as production-stage
+FROM ${runtime_image} AS production-stage
 
 ARG uid=1001
 ARG user=nodeapp

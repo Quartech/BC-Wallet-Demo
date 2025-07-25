@@ -11,7 +11,7 @@ global:
   # Optional: name of ConfigMap with extra environment variables to be used by all components
   extraEnvVarsCM: ""
   # Optional: name of Secret with extra environment variables to be used by all components
-  extraEnvVarsSecret: ""
+  extraEnvVarsSecret: "bc-wallet-secrets"
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
@@ -650,7 +650,6 @@ rabbitmq:
   enabled: true
   auth:
     username: bc_user
-    existingPasswordSecret: bc-wallet-rabbitmq-secret
     secretKeys:
       passwordKey: rabbitmq-password
   extraPlugins: "rabbitmq_management"

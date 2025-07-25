@@ -84,10 +84,10 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-generate api server host
+generate api server host #{{ .Values.global.ingressSuffix -}}
 */}}
 {{- define "bc-wallet.apiServer.host" -}}
-{{- include "bc-wallet.fullname" . }}-api-server{{ .Values.global.ingressSuffix -}}
+{{- include "bc-wallet.fullname" . }}-api-server
 {{- end -}}
 
 {{/*
@@ -133,8 +133,8 @@ Define database secret name - used to reference PostgreSQL generated secret
 Define database user password key - used to reference PostgreSQL generated secret
 */}}
 {{- define "bc-wallet.database.userPasswordKey" -}}
-{{- if .Values.postgresql.auth.secretKeys.userPasswordKey -}}
-{{- printf "%s" .Values.postgresql.auth.secretKeys.userPasswordKey -}}
+{{- if .Values.postgresql.auth.existingSecretKey -}}
+{{- .Values.postgresql.auth.existingSecretKey -}}
 {{- else -}}
 password
 {{- end -}}
