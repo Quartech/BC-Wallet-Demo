@@ -59,7 +59,10 @@ async function bootstrap() {
 
     // Health check endpoint
     app.get('/health', (_req: Request, res: Response) => {
-      res.status(200).send('OK')
+      res.status(200).json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+      })
     })
 
     app.listen(port, (): void => {
