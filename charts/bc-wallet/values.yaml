@@ -59,7 +59,7 @@ apiServer:
     repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-api-server 
     #ghcr.io/bcgov/bc-wallet-api-server
     # This sets the pull policy for images.
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
@@ -578,10 +578,10 @@ tractionAdapter:
     #   path: /
     #   port: http
   readinessProbe:
-    {}
-    # httpGet:
-    #   path: /
-    #   port: http
+    httpGet:
+      path: /health
+      port: http
+
 
   # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
   autoscaling:
