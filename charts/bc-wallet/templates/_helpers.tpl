@@ -87,7 +87,7 @@ Create the name of the service account to use
 generate api server host #{{ .Values.global.ingressSuffix -}}
 */}}
 {{- define "bc-wallet.apiServer.host" -}}
-{{- include "bc-wallet.fullname" . }}-api-server
+{{- include "bc-wallet.fullname" . }}-api-server{{ .Values.global.ingressSuffix -}}
 {{- end -}}
 
 {{/*
