@@ -7,7 +7,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
-  ingressSuffix: "-dev.apps.silver.devops.gov.bc.ca"
+  ingressSuffix: .trustservices.quartech.com
   # Optional: name of ConfigMap with extra environment variables to be used by all components
   extraEnvVarsCM: ""
   # Optional: name of Secret with extra environment variables to be used by all components
@@ -18,10 +18,22 @@ ingress:
   enabled: true
   className: ""
   annotations:
-    route.openshift.io/termination: edge
+    # route.openshift.io/termination: edge
+    appgw.ingress.kubernetes.io/request-timeout: "60"
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/ingress.class: azure/application-gateway
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  tls: []
+  # tls: []
+  tls:
+    - secretName: showcase-manager-tls
+      hosts:
+        - showcase-manager-bc-wallet-api-server.trustservices.quartech.com
+        - showcase-manager-bc-wallet-demo-server.trustservices.quartech.com
+        - showcase-manager-bc-wallet-demo-web.trustservices.quartech.com
+        - showcase-manager-bc-wallet-showcase-creator.trustservices.quartech.com
+        - showcase-manager-bc-wallet-traction-adapter.trustservices.quartech.com
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
@@ -44,9 +56,10 @@ apiServer:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: ghcr.io/bcgov/bc-wallet-api-server
+    repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-api-server 
+    #ghcr.io/bcgov/bc-wallet-api-server
     # This sets the pull policy for images.
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
@@ -111,10 +124,9 @@ apiServer:
     #   path: /
     #   port: http
   readinessProbe:
-    {}
-    # httpGet:
-    #   path: /
-    #   port: http
+    httpGet:
+      path: /health
+      port: http
 
   # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
   autoscaling:
@@ -128,8 +140,8 @@ apiServer:
     enabled: true
     ingress:
       enabled: true
-      namespaceSelector:
-        network.openshift.io/policy-group: ingress
+      namespaceSelector: {}
+        # network.openshift.io/policy-group: ingress
       podSelector: {}
 
   # Additional volumes on the output Deployment definition.
@@ -157,7 +169,8 @@ demoServer:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: ghcr.io/bcgov/bc-wallet-demo-server
+    repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-server 
+    #ghcr.io/bcgov/bc-wallet-demo-server
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
@@ -242,8 +255,8 @@ demoServer:
     enabled: true
     ingress:
       enabled: true
-      namespaceSelector:
-        network.openshift.io/policy-group: ingress
+      namespaceSelector: {}
+        # network.openshift.io/policy-group: ingress
       podSelector: {}
 
   # Additional volumes on the output Deployment definition.
@@ -271,7 +284,8 @@ demoWeb:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: ghcr.io/bcgov/bc-wallet-demo-web
+    repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-web 
+    #ghcr.io/bcgov/bc-wallet-demo-web
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
@@ -282,7 +296,8 @@ demoWeb:
 
   logLevel: debug
   baseRoute: /digital-trust/showcase
-  snowplowEndpoint: spm.apps.gov.bc.ca
+  snowplowEndpoint: spm.trustservices.quartech.com 
+  #spm.apps.gov.bc.ca #TODO: change to spm.trustservices.quartech.com
   insightsProjectId: your_insights_project_id
 
   # Name of ConfigMap with extra environment variables; overrides global.extraEnvVarsCM if set
@@ -355,8 +370,8 @@ demoWeb:
     enabled: true
     ingress:
       enabled: true
-      namespaceSelector:
-        network.openshift.io/policy-group: ingress
+      namespaceSelector: {}
+        # network.openshift.io/policy-group: ingress
       podSelector: {}
 
   # Additional volumes on the output Deployment definition.
@@ -384,7 +399,8 @@ showcaseCreator:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: ghcr.io/bcgov/bc-wallet-showcase-creator
+    repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-showcase-creator 
+    #ghcr.io/bcgov/bc-wallet-showcase-creator
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
@@ -467,8 +483,8 @@ showcaseCreator:
     enabled: true
     ingress:
       enabled: true
-      namespaceSelector:
-        network.openshift.io/policy-group: ingress
+      namespaceSelector: {}
+        # network.openshift.io/policy-group: ingress
       podSelector: {}
 
   # Additional volumes on the output Deployment definition.
@@ -496,7 +512,8 @@ tractionAdapter:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: ghcr.io/bcgov/bc-wallet-traction-adapter
+    repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-traction-adapter 
+    #ghcr.io/bcgov/bc-wallet-traction-adapter
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
@@ -578,8 +595,8 @@ tractionAdapter:
     enabled: true
     ingress:
       enabled: true
-      namespaceSelector:
-        network.openshift.io/policy-group: ingress
+      namespaceSelector: {}
+        # network.openshift.io/policy-group: ingress
       podSelector: {}
 
   # Additional volumes on the output Deployment definition.
@@ -628,6 +645,10 @@ postgresql:
       enabled: false
     containerSecurityContext:
       enabled: false
+  volumePermissions:
+    ## @param volumePermissions.enabled Enable init container that changes the owner and group of the persistent volume
+    ##
+    enabled: true
   networkPolicy:
     enabled: true
     extraIngress:
@@ -687,6 +708,10 @@ rabbitmq:
   pdb:
     create: true
     minAvailable: 1
+  volumePermissions:
+    ## @param volumePermissions.enabled Enable init container that changes the owner and group of the persistent volume
+    ##
+    enabled: true
   networkPolicy:
     enabled: true
     extraIngress:
