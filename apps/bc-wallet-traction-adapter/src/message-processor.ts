@@ -299,4 +299,8 @@ export class MessageProcessor {
       await this.connection.close()
     }
   }
+
+  public isConnected(): boolean {
+    return this.connection && this.connection.isOpen() && this.receiver && this.receiver.isOpen()
+  }
 }
