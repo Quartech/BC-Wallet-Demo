@@ -2,6 +2,7 @@ require('dotenv-flow').config()
 
 import 'reflect-metadata'
 import * as process from 'node:process'
+import { Request, Response } from 'express'
 import { createExpressServer, useContainer } from 'routing-controllers'
 import Container from 'typedi'
 
@@ -55,6 +56,11 @@ async function bootstrap() {
 
     // Start the server
     const port = Number(process.env.PORT)
+
+    // Health check endpoint
+    app.get('/health', (_req: Request, res: Response) => {
+      res.status(200).send('OK')
+    })
 
     app.listen(port, (): void => {
       console.log(`Server is running on port ${port}`)
