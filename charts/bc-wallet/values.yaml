@@ -635,12 +635,13 @@ postgresql:
       enabled: true
       size: 1Gi
     resources:
-      limits:
-        cpu: 200m
-        memory: 256Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+      {}
+      # limits:
+      #   cpu: 200m
+      #   memory: 256Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
     podSecurityContext:
       enabled: false
     containerSecurityContext:
@@ -694,12 +695,13 @@ rabbitmq:
     enabled: true
     size: 1Gi
   resources:
-    limits:
-      cpu: 200m
-      memory: 512Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
+    {}
+    # limits:
+    #   cpu: 200m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
   containerSecurityContext:
     enabled: false
   podSecurityContext:
