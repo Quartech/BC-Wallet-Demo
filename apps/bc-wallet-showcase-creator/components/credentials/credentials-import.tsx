@@ -52,23 +52,39 @@ export const CredentialsImport = () => {
       }
 
       const SchemaResponse = await importCredentialSchema(importSchemaPayload)
-      if (!SchemaResponse) toast.error('Failed to import schema')
-
-      const [ CredentialDefinitionPrefix ] = data.credentialId.split(':');
-
-      const importCredentialDefinitionPayload: CredentialDefinitionImportRequest = {
-        name: CredentialDefinitionPrefix,
-        identifierType: IdentifierType.Did,
-        identifier: data.credentialId,
-        tenantId: tenantId
+      if (!SchemaResponse) {
+        console.error('onSubmit: Failed to import schema. SchemaResponse was falsy.');
+        toast.error('Failed to import schema')
+        setLoader(false)
+        return // Stop execution if schema import fails
       }
 
-      setTimeout(() => {
-        form.reset()
-        toast.success('Credential imported successfully');
-        setLoader(false)
-        queryClient.invalidateQueries({ queryKey: ['credential'] })
-      }, 5000);
+      setTimeout(async() => {  
+        const [ CredentialDefinitionPrefix ] = data.credentialId.split(':');
+  
+        const importCredentialDefinitionPayload: CredentialDefinitionImportRequest = {
+          name: CredentialDefinitionPrefix,
+          identifierType: IdentifierType.Did,
+          identifier: data.credentialId,
+          tenantId: tenantId
+        }
+        
+        const CredentialDefinitionResponse = await importCredentialDefinition(importCredentialDefinitionPayload)
+        if(!CredentialDefinitionResponse) {
+          console.error('onSubmit: Failed to import CredentialDefinition. CredentialDefinitionResponse was falsy.');
+          toast.error('Failed to import CredentialDefinition')
+          setLoader(false)
+          return // Stop execution if credential definition import fails
+        }
+  
+        setTimeout(() => {
+          form.reset()
+          toast.success('Credential imported successfully');
+          setLoader(false)
+          queryClient.invalidateQueries({ queryKey: ['credentialDefinitions'] })
+        }, 5000);
+      }, 7000);
+
 
     } catch (error) {
       console.error('onSubmit: Error during credential import process:', error);
