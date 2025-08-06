@@ -1,9 +1,12 @@
 Credentials:
 
 Name: L.A. Metro Employee ID
-Version: 1.0.0
+Version: 1.0
 
-
+Attributes:
+    Given_Name: STRING
+    Types: STRING
+    Date: DATE
 
 Showcase Manager:
 

@@ -1,7 +1,16 @@
 Credentials:
 
-Name: California Driver License (mDL)
-Version: 1.0.0
+Name: California mDL
+Version: 1.0
+
+Attributes:
+    Issued by: STRING
+    Data Source: STRING
+    Customer Identifier: STRING
+    DOB: DATE
+    ISS: DATE
+    EXP: DATE
+    Name: STRING
 
 id
     Defined in Section 4.4 Identifiers. 
