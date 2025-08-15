@@ -115,7 +115,7 @@ const usePresentationCreationStore = create<PresentationCreationState>()(
         if (state.personaScenariosMap[persona.id]) return
 
         const defaultScenario: PresentationScenarioRequest = {
-          name: "Add your student exam results",
+          name: "Proving your credential",
           description: `Presentation scenario for ${persona.name}`,
           steps: [
             {
