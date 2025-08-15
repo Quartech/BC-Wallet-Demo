@@ -1,40 +1,41 @@
 Credentials:
 
-Name: L.A. Metro Employee ID
+Name: la-metro-volunteer-id
 Version: 1.0
 
 Attributes:
-    Given_Name: STRING
-    Types: STRING
-    Date: DATE
+    Name: STRING
+    Role: STRING
+    ISS: DATE
+    EXP: DATE
 
 Showcase Manager:
 
 Name: L.A. Metro Volunteer Showcase
 Description: 
-    This digital credential experience demonstrates how verifiable credentials can streamline identity and volunteer verification in preparation for large-scale events like the upcoming L.A. Olympic Games. This showcase focuses on the volunteer credential flow, where an L.A. Metro employee with an existing mobile driver's license (mDL) credential obtains a volunteer credential for the L.A. Games. The volunteer will be able to use this credential to verify their identity and volunteer status at event venues.
+    This showcase focuses on the volunteer credential flow, where an L.A. Metro Volunteer with an existing mobile driver's license (mDL) credential obtains a volunteer credential for L.A. Metro. The volunteer will be able to use this credential to verify their identity and volunteer status at Metro facilities and events.
 
 
 Showcase Completion Details:
-    Thank you for completing the L.A. Metro Volunteer Showcase! You have successfully verified your identity and volunteer status. You can now use this credential to verify your identity and volunteer status at L.A. Games event venues.
+    Thank you for completing the L.A. Metro Volunteer Showcase! You have successfully verified your identity and volunteer status. You can now use this credential to verify your identity and volunteer status at L.A. Metro facilities and events.
 
 Character Details
-    Name: John Doe
-    Role: L.A. Metro Employee
+    Name: L.A. Metro Volunteer
+    Role: California Resident
     Description: 
-        John Doe is an L.A. Metro employee who already has a mobile driver's license (mDL) credential from the California DMV. As part of their role supporting transit operations in the lead-up to the Olympic Games, they've volunteered to assist with the L.A. Games, helping manage transportation logistics and guiding visitors across key venues. To participate in volunteer activities, they need to obtain a digital L.A. Games Volunteer credential that confirms their verified volunteer status and grants access to event locations.
+        L.A. Metro Volunteer is a California resident who already has a mobile driver's license (mDL) credential from the California DMV. To participate in volunteer activities, they need to obtain a digital L.A. Metro Volunteer credential that confirms their verified volunteer status and grants access to Metro facilities and events.
 
-Page Title: Continue on John Doe
+Page Title: Continue on L.A. Metro Volunteer
 Page Content: 
-    Continue on with John Doe.
+    Continue on with L.A. Metro Volunteer.
 
 Page Title: Connect with L.A. Metro
 Page Content: 
-    Imagine, as John Doe, you are logged into the L.A. Metro website to apply for a volunteer position at the L.A. Games. You already proved your identity with your mDL credential, so you can now apply for a volunteer position. Receive an offer in [BC Wallet] for a Volunteer Card.
+    Imagine, as L.A. Metro Volunteer, you are logged into the L.A. Metro website to apply for a volunteer position. You already proved your identity with your mDL credential, so you can now apply for a volunteer position. Receive an offer in your Verifiable Credential Wallet for a Volunteer Card.
 
 Page Title: Accept your volunteer card
 Page Content: 
-    After verifying your identity with your mDL credential, L.A. Metro has confirmed your eligibility for volunteer positions. Your wallet now has a secure and private connection with L.A. Metro. You should have received an offer in BC Wallet for a Volunteer Card. Review what they are sending, and choose 'Accept offer'.
+    After verifying your identity with your mDL credential, L.A. Metro has confirmed your eligibility for volunteer positions. Your wallet now has a secure and private connection with L.A. Metro. You should have received an offer in your Verifiable Credential Wallet for a Volunteer Card. Review what they are sending, and choose 'Accept offer'.
 
 Page Title: You're all set!
 Page Content: 
@@ -42,11 +43,11 @@ Page Content:
 
 Page Title: Scan the QR code to start sharing
 Page Content: 
-    Open the [BC Wallet] app and scan the QR code on the L.A. Metro website to start sharing your volunteer credential with L.A. Metro.
+    Open your Verifiable Credential Wallet app and scan the QR code on the L.A. Metro website to start sharing your volunteer credential with L.A. Metro.
 
 Page Title: Confirm the information to send
 Page Content: 
-    BC Wallet will now ask you to confirm what to send. Notice how it will only share if the credential has not expired, not even the expiry date itself gets shared. You don't have to share anything else for it to be trustable.
+    Your Verifiable Credential Wallet will now ask you to confirm what to send. Notice how it will only share if the credential has not expired, not even the expiry date itself gets shared. You don't have to share anything else for it to be trustable.
 
 Page Title: You are done!
 Page Content: 
