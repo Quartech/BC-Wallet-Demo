@@ -56,10 +56,6 @@ export const DemoCompletedModal: React.FC<Props> = ({ action, cancel }) => {
                     </a>
 
                     <br />
-                    <a href="https://4sure.tech/">
-                      Based on code by <u>4sure Technology Solutions</u>
-                    </a>
-                    <br />
                   </div>
                 </div>
               </div>
