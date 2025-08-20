@@ -132,7 +132,7 @@ export const DashboardPage: React.FC = () => {
               {/*  />*/}
               {/*)}*/}
             </div>
-            <div className="flex flex-1 flex-col p-2 mx-2 dark:text-white">
+            <div className="flex flex-1 flex-col p-2 mx-2 align-middle dark:text-white">
               <ProfileCard currentPersona={currentPersona} />
             </div>
           </div>
