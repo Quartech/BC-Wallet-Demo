@@ -1,11 +1,13 @@
 import React from 'react'
-import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
+
+// import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { motion } from 'framer-motion'
 import { startCase } from 'lodash'
+
+import { showcaseServerBaseUrl } from '../../../api/BaseUrl'
 import { rowFadeX } from '../../../FramerAnimations'
-import { StartButton } from './StartButton'
-import { showcaseServerBaseUrl } from '../../../api/BaseUrl';
 import type { CredentialDefinition, Persona } from '../../../slices/types'
+import { StartButton } from './StartButton'
 
 export interface Props {
   slug: string
@@ -52,16 +54,16 @@ export const UseCaseItem: React.FC<Props> = ({
             <div className="flex flex-1 items-end justify-end">
               <StartButton
                 onClick={() => {
-                  trackSelfDescribingEvent({
-                    event: {
-                      schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-                      data: {
-                        action: 'start',
-                        path: `${currentPersona.role.toLowerCase()}_${slug}`,
-                        step: 'usecase_start',
-                      },
-                    },
-                  })
+                  // trackSelfDescribingEvent({
+                  //   event: {
+                  //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+                  //     data: {
+                  //       action: 'start',
+                  //       path: `${currentPersona.role.toLowerCase()}_${slug}`,
+                  //       step: 'usecase_start',
+                  //     },
+                  //   },
+                  // })
                   start(slug)
                 }}
                 text={'START'}

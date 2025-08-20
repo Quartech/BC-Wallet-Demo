@@ -1,14 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react'
-import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
+import React, { useEffect, useRef, useState } from 'react'
+
+// import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { motion } from 'framer-motion'
+
 import { ActionCTA } from '../../../../components/ActionCTA'
 import { useAppDispatch } from '../../../../hooks/hooks'
 import { useConnection } from '../../../../slices/connection/connectionSelectors'
 import { createDeepProof, createProof, deleteProofById, fetchProofById } from '../../../../slices/proof/proofThunks'
 import { useSocket } from '../../../../slices/socket/socketSelector'
+import type { CredentialRequest } from '../../../../slices/types'
 import { FailedRequestModal } from '../../../onboarding/components/FailedRequestModal'
 import { ProofAttributesCard } from '../../components/ProofAttributesCard'
-import type { CredentialRequest } from '../../../../slices/types'
 
 export interface Props {
   proof?: any
@@ -17,7 +19,7 @@ export interface Props {
   connectionId: string
   requestedCredentials: CredentialRequest[]
   entityName: string
-  requestOptions: { title: string, text: string }
+  requestOptions: { title: string; text: string }
 }
 
 export const PresentCredentialAction: React.FC<Props> = ({
@@ -27,7 +29,7 @@ export const PresentCredentialAction: React.FC<Props> = ({
   requestedCredentials,
   entityName,
   characterType,
-  requestOptions
+  requestOptions,
 }) => {
   const dispatch = useAppDispatch()
   const proofReceived =
@@ -38,15 +40,13 @@ export const PresentCredentialAction: React.FC<Props> = ({
   const [isFailedRequestModalOpen, setIsFailedRequestModalOpen] = useState(false)
   const showFailedRequestModal = () => setIsFailedRequestModalOpen(true)
   const closeFailedRequestModal = () => setIsFailedRequestModalOpen(false)
-  const proofRequestCreated = useRef(false);
+  const proofRequestCreated = useRef(false)
 
   const { isDeepLink } = useConnection()
   const { message } = useSocket()
 
   const createProofRequest = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const proofs: any = []
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const predicates: any = []
 
     requestedCredentials?.forEach((item) => {
@@ -89,7 +89,7 @@ export const PresentCredentialAction: React.FC<Props> = ({
           attributes: proofs,
           predicates: predicates,
           requestOptions: { name: requestOptions.title, comment: requestOptions.text },
-        })
+        }),
       )
     } else {
       dispatch(
@@ -98,7 +98,7 @@ export const PresentCredentialAction: React.FC<Props> = ({
           attributes: proofs,
           predicates: predicates,
           requestOptions: { name: requestOptions.title, comment: requestOptions.text },
-        })
+        }),
       )
     }
   }
@@ -143,43 +143,43 @@ export const PresentCredentialAction: React.FC<Props> = ({
   }
 
   return (
-      <motion.div>
-        <div className="flex flex-row m-auto w-full">
-          <div className="w-full lg:w-2/3 sxl:w-2/3 m-auto">
-            {proof && (
-                <ProofAttributesCard
-                    entityName={entityName}
-                    requestedCredentials={requestedCredentials}
-                    proof={proof}
-                    proofReceived={proofReceived}
-                />
-            )}
-          </div>
-        </div>
-        <ActionCTA
-            isCompleted={proofReceived}
-            onFail={() => {
-              trackSelfDescribingEvent({
-                event: {
-                  schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-                  data: {
-                    action: 'cred_not_received',
-                    path: characterType,
-                    step: title,
-                  },
-                },
-              })
-              showFailedRequestModal()
-            }}
-        />
-        {isFailedRequestModalOpen && (
-            <FailedRequestModal
-                key="credentialModal"
-                action={sendNewRequest}
-                close={closeFailedRequestModal}
-                proof={true}
+    <motion.div>
+      <div className="flex flex-row m-auto w-full">
+        <div className="w-full lg:w-2/3 sxl:w-2/3 m-auto">
+          {proof && (
+            <ProofAttributesCard
+              entityName={entityName}
+              requestedCredentials={requestedCredentials}
+              proof={proof}
+              proofReceived={proofReceived}
             />
-        )}
-      </motion.div>
+          )}
+        </div>
+      </div>
+      <ActionCTA
+        isCompleted={proofReceived}
+        onFail={() => {
+          // trackSelfDescribingEvent({
+          //   event: {
+          //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+          //     data: {
+          //       action: 'cred_not_received',
+          //       path: characterType,
+          //       step: title,
+          //     },
+          //   },
+          // })
+          showFailedRequestModal()
+        }}
+      />
+      {isFailedRequestModalOpen && (
+        <FailedRequestModal
+          key="credentialModal"
+          action={sendNewRequest}
+          close={closeFailedRequestModal}
+          proof={true}
+        />
+      )}
+    </motion.div>
   )
 }
