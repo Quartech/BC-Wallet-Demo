@@ -101,11 +101,7 @@ export const OnboardingContainer: FC<Props> = ({
   }, [currentStep])
 
   useEffect((): void => {
-    setCredentialsAccepted(
-      credentialDefinitions?.every((credentialDefinition: CredentialDefinition) =>
-        issuedCredentials.includes(credentialDefinition.name),
-      ),
-    )
+    setCredentialsAccepted(credentialDefinitions?.every((credentialDefinition: CredentialDefinition) => issuedCredentials.includes(credName)))
   }, [credentialDefinitions, issuedCredentials])
 
   useEffect((): void => {

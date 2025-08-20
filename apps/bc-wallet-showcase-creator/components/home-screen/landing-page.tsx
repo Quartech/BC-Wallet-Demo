@@ -153,7 +153,7 @@ export const LandingPage = () => {
                   <div className="absolute bg-black bottom-0 left-0 right-0 bg-opacity-70 p-3">
                     <p className="text-xs text-gray-300 break-words">
                       {t('showcases.created_by_label', {
-                        name: 'Quartech',
+                        name: tenantId,
                       })}
                     </p>
                     <div className="flex justify-between">
