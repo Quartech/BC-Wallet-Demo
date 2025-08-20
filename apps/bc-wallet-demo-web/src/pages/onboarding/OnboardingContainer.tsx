@@ -78,6 +78,15 @@ export const OnboardingContainer: FC<Props> = ({
     }
   }, [scenarios, currentPersona, dispatch])
 
+  const credDefParts = credentialDefinitions && credentialDefinitions[0]?.identifier?.split(':')
+  const credName = credDefParts && credDefParts[credDefParts.length - 1]
+
+  useEffect((): void => {
+    if (!currentPersona && scenarios.length > 0) {
+      dispatch(setScenario(scenarios[0]))
+    }
+  }, [scenarios, currentPersona, dispatch])
+
   useEffect((): void => {
     setCurrentScenario(scenarios.find((scenario) => scenario.persona?.id === currentPersona?.id))
   }, [scenarios, currentPersona])
