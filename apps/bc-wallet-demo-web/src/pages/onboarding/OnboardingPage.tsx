@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { trackPageView } from '@snowplow/browser-tracker'
+// import { trackPageView } from '@snowplow/browser-tracker'
+import { ScenarioType } from 'bc-wallet-openapi'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { CustomUpload } from '../../components/CustomUpload'
@@ -19,12 +20,11 @@ import { clearShowcase } from '../../slices/showcases/showcasesSlice'
 import { fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
 import { fetchWallets } from '../../slices/wallets/walletsThunks'
 import { basePath } from '../../utils/BasePath'
+import { getTenantIdFromPath } from '../../utils/Helpers'
 import { useSlug } from '../../utils/SlugUtils'
 import { PageNotFound } from '../PageNotFound'
 import { Stepper } from './components/Stepper'
 import { OnboardingContainer } from './OnboardingContainer'
-import { ScenarioType } from 'bc-wallet-openapi'
-import { getTenantIdFromPath } from '../../utils/Helpers'
 
 export const OnboardingPage: React.FC = () => {
   useTitle('Get Started | BC Wallet Self-Sovereign Identity Demo')
@@ -36,7 +36,7 @@ export const OnboardingPage: React.FC = () => {
   const { currentStep, isCompleted, scenario } = useOnboarding()
   const { state, invitationUrl, id } = useConnection()
   const { characterUploadEnabled } = usePreferences()
-  const tenantId = getTenantIdFromPath();
+  const tenantId = getTenantIdFromPath()
 
   useEffect(() => {
     if (isCompleted && showcase && currentPersona) {
@@ -58,9 +58,9 @@ export const OnboardingPage: React.FC = () => {
     dispatch(fetchWallets())
   }, [dispatch])
 
-  useEffect(() => {
-    trackPageView()
-  }, [])
+  // useEffect(() => {
+  //   trackPageView()
+  // }, [])
 
   if (showcase === undefined) {
     dispatch(fetchShowcaseBySlug(slug))
@@ -87,7 +87,7 @@ export const OnboardingPage: React.FC = () => {
         {showcase && (
           <AnimatePresence mode="wait">
             <OnboardingContainer
-              scenarios={showcase.scenarios.filter(scenario => scenario.type === ScenarioType.Issuance)}
+              scenarios={showcase.scenarios.filter((scenario) => scenario.type === ScenarioType.Issuance)}
               currentPersona={currentPersona}
               currentStep={currentStep}
               connectionId={id}

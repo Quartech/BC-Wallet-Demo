@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
+// import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { motion } from 'framer-motion'
 
 import { ActionCTA } from '../../../../components/ActionCTA'
@@ -40,15 +40,13 @@ export const PresentCredentialAction: React.FC<Props> = ({
   const [isFailedRequestModalOpen, setIsFailedRequestModalOpen] = useState(false)
   const showFailedRequestModal = () => setIsFailedRequestModalOpen(true)
   const closeFailedRequestModal = () => setIsFailedRequestModalOpen(false)
-  const proofRequestCreated = useRef(false);
+  const proofRequestCreated = useRef(false)
 
   const { isDeepLink } = useConnection()
   const { message } = useSocket()
 
   const createProofRequest = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const proofs: any = []
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const predicates: any = []
 
     requestedCredentials?.forEach((item) => {
@@ -94,7 +92,7 @@ export const PresentCredentialAction: React.FC<Props> = ({
           attributes: proofs,
           predicates: predicates,
           requestOptions: { name: requestOptions.title, comment: requestOptions.text },
-        })
+        }),
       )
     } else {
       dispatch(
@@ -103,7 +101,7 @@ export const PresentCredentialAction: React.FC<Props> = ({
           attributes: proofs,
           predicates: predicates,
           requestOptions: { name: requestOptions.title, comment: requestOptions.text },
-        })
+        }),
       )
     }
   }
@@ -164,16 +162,16 @@ export const PresentCredentialAction: React.FC<Props> = ({
       <ActionCTA
         isCompleted={proofReceived}
         onFail={() => {
-          trackSelfDescribingEvent({
-            event: {
-              schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-              data: {
-                action: 'cred_not_received',
-                path: characterType,
-                step: title,
-              },
-            },
-          })
+          // trackSelfDescribingEvent({
+          //   event: {
+          //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+          //     data: {
+          //       action: 'cred_not_received',
+          //       path: characterType,
+          //       step: title,
+          //     },
+          //   },
+          // })
           showFailedRequestModal()
         }}
       />
