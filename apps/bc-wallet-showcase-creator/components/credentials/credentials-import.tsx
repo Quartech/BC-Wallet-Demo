@@ -65,7 +65,7 @@ export const CredentialsImport = () => {
           identifierType: IdentifierType.Did,
           identifier: data.credentialId,
           tenantId: tenantId,
-          version: schemaVersion,
+          version: schemaVersion
         }
         
         const CredentialDefinitionResponse = await importCredentialDefinition(importCredentialDefinitionPayload)
