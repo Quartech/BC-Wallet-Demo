@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { StepActionType } from 'bc-wallet-openapi'
 import { motion } from 'framer-motion'
@@ -43,10 +43,9 @@ export const StepInformation: FC<Props> = (props: Props) => {
           )
         }
         case StepActionType.AriesOob: {
-          //@ts-ignore
-                if (!action.credentialDefinitions || action.credentialDefinitions.length === 0) {
-              return
-          }
+          //   if (!connection?.id) {
+          //       throw new Error('A connection id is required for a present credential action')
+          //   }
           return (
             <PresentCredentialAction
               title={title}
@@ -61,8 +60,7 @@ export const StepInformation: FC<Props> = (props: Props) => {
                   schema_id: credentialDefinition.schema.identifier,
                   properties:
                     credentialDefinition.proofRequest?.attributes?.[credentialDefinition.schema.name].attributes,
-                  predicates:
-                    credentialDefinition.proofRequest?.predicates?.[credentialDefinition.schema.name].predicates,
+                  predicates: credentialDefinition.proofRequest?.predicates?.[credentialDefinition.schema.name],
                 }),
               )}
               requestOptions={{

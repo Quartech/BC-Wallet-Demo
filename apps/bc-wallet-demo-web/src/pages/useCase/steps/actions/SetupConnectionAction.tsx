@@ -1,17 +1,19 @@
-import React, { FC, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { isMobile } from 'react-device-detect'
 import { FiExternalLink } from 'react-icons/fi'
+
 import { motion } from 'framer-motion'
+
+import { showcaseServerBaseUrl } from '../../../../api/BaseUrl'
 import { QRCode } from '../../../../components/QRCode'
 import { fade } from '../../../../FramerAnimations'
 import { useAppDispatch } from '../../../../hooks/hooks'
 import { setConnection, setDeepLink } from '../../../../slices/connection/connectionSlice'
+import type { ConnectionState } from '../../../../slices/connection/connectionSlice'
 import { createInvitation } from '../../../../slices/connection/connectionThunks'
 import { useSocket } from '../../../../slices/socket/socketSelector'
 import { nextStep } from '../../../../slices/useCases/useCasesSlice'
 import { isConnected } from '../../../../utils/Helpers'
-import { showcaseServerBaseUrl } from '../../../../api/BaseUrl'
-import type { ConnectionState } from '../../../../slices/connection/connectionSlice'
 
 export interface Props {
   verifierName: string
@@ -22,13 +24,7 @@ export interface Props {
 }
 
 export const SetupConnectionAction: FC<Props> = (props: Props) => {
-  const {
-    connection,
-    newConnection,
-    verifierName,
-    image,
-    title
-  } = props
+  const { connection, newConnection, verifierName, image, title } = props
   const dispatch = useAppDispatch()
   const { state, invitationUrl } = connection
   const { message } = useSocket()
@@ -84,22 +80,20 @@ export const SetupConnectionAction: FC<Props> = (props: Props) => {
     </motion.div>
   )
 
-  return (
-      image && !isMobile ? (
-          <div
-              className="bg-contain bg-center bg-no-repeat h-full flex justify-end"
-              title={title}
-              style={{ backgroundImage: `url(${showcaseServerBaseUrl}/assets/${image}/file)` }}
-          >
-              <div className="max-w-xs flex flex-col self-center items-center bg-white rounded-lg p-4 mr-8 shadow-lg dark:text-black">
-                {renderQRCode(true)}
-              </div>
-            </div>
-        ) : (
-            <>
-              {renderQRCode()}
-              <div className="flex flex-col my-4 text-center font-semibold">{renderCTA}</div>
-            </>
-      )
+  return image && !isMobile ? (
+    <div
+      className="bg-contain bg-center bg-no-repeat h-full flex justify-end"
+      title={title}
+      style={{ backgroundImage: `url(${showcaseServerBaseUrl}/assets/${image}/file)` }}
+    >
+      <div className="max-w-xs flex flex-col self-center items-center bg-white rounded-lg p-4 mr-8 shadow-lg dark:text-black">
+        {renderQRCode(true)}
+      </div>
+    </div>
+  ) : (
+    <>
+      {renderQRCode()}
+      <div className="flex flex-col my-4 text-center font-semibold">{renderCTA}</div>
+    </>
   )
 }
