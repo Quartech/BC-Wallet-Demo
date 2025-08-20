@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import { StepActionType } from 'bc-wallet-openapi'
 import { motion } from 'framer-motion'
