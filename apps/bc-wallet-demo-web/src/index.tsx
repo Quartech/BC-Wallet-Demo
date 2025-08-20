@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 
-import { enableActivityTracking, newTracker, trackPageView } from '@snowplow/browser-tracker'
+// import { enableActivityTracking, newTracker, trackPageView } from '@snowplow/browser-tracker'
 import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App'
@@ -14,16 +14,16 @@ import { KBar } from './utils/KBar'
 const { store, persistor } = Redux
 const root = createRoot(document.getElementById('root') as HTMLElement)
 
-newTracker('sp1', 'spt.apps.gov.bc.ca', {
-  appId: 'Snowplow_standalone_DIG',
-  cookieLifetime: 86400 * 548,
-  platform: 'web',
-  contexts: {
-    webPage: true,
-  },
-})
-enableActivityTracking({ minimumVisitLength: 15, heartbeatDelay: 30 })
-trackPageView()
+// newTracker('sp1', 'spt.apps.gov.bc.ca', {
+//   appId: 'Snowplow_standalone_DIG',
+//   cookieLifetime: 86400 * 548,
+//   platform: 'web',
+//   contexts: {
+//     webPage: true,
+//   },
+// })
+// enableActivityTracking({ minimumVisitLength: 15, heartbeatDelay: 30 })
+// trackPageView()
 root.render(
   <React.StrictMode>
     <Provider store={store}>
@@ -35,5 +35,5 @@ root.render(
         </BrowserRouter>
       </PersistGate>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 )
