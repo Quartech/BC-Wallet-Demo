@@ -13,6 +13,7 @@ import { useCredentials } from '../../slices/credentials/credentialsSelectors'
 import { usePreferences } from '../../slices/preferences/preferencesSelectors'
 import { setDemoCompleted } from '../../slices/preferences/preferencesSlice'
 import { useShowcases } from '../../slices/showcases/showcasesSelectors'
+import { clearShowcase } from '../../slices/showcases/showcasesSlice'
 import { fetchPersonaBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
 import type { Scenario } from '../../slices/types'
 import { basePath } from '../../utils/BasePath'
@@ -44,6 +45,7 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     const load = async () => {
+      dispatch(clearShowcase())
       await dispatch(fetchShowcaseBySlug(showcaseSlug))
       await dispatch(fetchPersonaBySlug(personaSlug))
     }

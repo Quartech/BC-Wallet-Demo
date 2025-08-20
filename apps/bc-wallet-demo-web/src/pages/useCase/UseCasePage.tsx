@@ -12,6 +12,7 @@ import { useTitle } from '../../hooks/useTitle'
 import { useConnection } from '../../slices/connection/connectionSelectors'
 import { useProof } from '../../slices/proof/proofSelectors'
 import { useShowcases } from '../../slices/showcases/showcasesSelectors'
+import { clearShowcase } from '../../slices/showcases/showcasesSlice'
 import { fetchPersonaBySlug, fetchScenarioBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
 import type { PresentationScenario } from '../../slices/types'
 import { useUseCaseState } from '../../slices/useCases/useCasesSelectors'
@@ -40,6 +41,7 @@ export const UseCasePage: React.FC = () => {
 
   useEffect(() => {
     const load = async () => {
+      dispatch(clearShowcase())
       await dispatch(fetchShowcaseBySlug(showcaseSlug))
       await dispatch(fetchPersonaBySlug(personaSlug))
       await dispatch(fetchScenarioBySlug(scenarioSlug))
