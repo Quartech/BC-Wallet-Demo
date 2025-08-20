@@ -23,6 +23,12 @@ import { PageNotFound } from '../PageNotFound'
 import { DemoCompletedModal } from './components/DemoCompletedModal'
 import { ProfileCard } from './components/ProfileCard'
 import { UseCaseContainer } from './components/UseCaseContainer'
+import { fetchPersonaBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
+import { clearShowcase } from '../../slices/showcases/showcasesSlice'
+import { usePersonaSlug, useSlug } from '../../utils/SlugUtils'
+import { PageNotFound } from '../PageNotFound'
+import { ScenarioType } from 'bc-wallet-openapi'
+import type { Scenario } from '../../slices/types'
 
 export const DashboardPage: React.FC = () => {
   useTitle('Dashboard | BC Wallet Self-Sovereign Identity Demo')
@@ -44,8 +50,9 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     const load = async () => {
-      await dispatch(fetchShowcaseBySlug(showcaseSlug))
-      await dispatch(fetchPersonaBySlug(personaSlug))
+        dispatch(clearShowcase())
+        await dispatch(fetchShowcaseBySlug(showcaseSlug))
+        await dispatch(fetchPersonaBySlug(personaSlug))
     }
     void load()
   }, [dispatch, showcaseSlug, personaSlug])
