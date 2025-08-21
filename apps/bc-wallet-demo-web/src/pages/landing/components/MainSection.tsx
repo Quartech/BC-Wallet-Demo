@@ -1,67 +1,28 @@
 import React from 'react'
-import { isMobile } from 'react-device-detect'
-// import { FiArrowRight, FiExternalLink } from 'react-icons/fi'
-// import { useNavigate } from 'react-router-dom'
 
-// import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { motion } from 'framer-motion'
 
-import landingScreen from '../../../assets/light/landing-screen.svg'
-import { fade, fadeDelay, landingTitle } from '../../../FramerAnimations'
-// import { basePath } from '../../../utils/BasePath'
+import { walletBaseUrl } from '../../../api/BaseUrl'
+import { fadeDelay, landingTitle } from '../../../FramerAnimations'
+
+// Hardcoded array of available showcases
+const availableShowcases = [
+  {
+    id: 1,
+    name: 'California DMV mDL Showcase',
+    status: 'Available',
+    url: `${walletBaseUrl}/showcase-manager-tenant/california-dmv-mdl-showcase`,
+  },
+  {
+    id: 2,
+    name: 'Los Angeles Metro Volunteer',
+    status: 'Available',
+    url: `${walletBaseUrl}/showcase-manager-tenant/la-metro-volunteer-showcase`,
+  },
+]
 
 export const MainSection: React.FC = () => {
-  // const navigate = useNavigate()
-
-  // const handleStart = () => {
-  //   trackSelfDescribingEvent({
-  //     event: {
-  //       schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-  //       data: {
-  //         action: 'next',
-  //         path: 'shared',
-  //         step: "Let's get started",
-  //       },
-  //     },
-  //   })
-  //   navigate(`${basePath}/${process.env.REACT_APP_DEFAULT_SLUG}`)
-  // }
-
-  const renderMobileTitle = (
-    <motion.div className="flex-1 dark:text-white text-left text-4xl font-semibold my-8 leading-snug ">
-      <div className="overflow-hidden py-1">
-        <motion.h1 variants={landingTitle}>Verifiable Credential Showcase</motion.h1>
-      </div>
-      <div className="overflow-hidden">
-        <motion.h2 variants={fade} className="text-lg font-normal mt-6 dark:text-bcgov-lightgrey text-bcgov-darkgrey">
-          Explore how you can use Verifiable Credentials to prove things about yourself, in a way that's safe and
-          secure.
-        </motion.h2>
-      </div>
-      {/* <div className="flex flex-col justify-center text-base sxl:text-lg font-normal mt-6 m-auto">
-        <motion.button
-          variants={fade}
-          whileHover={buttonHover}
-          className="bg-bcgov-blue dark:bg-bcgov-white text-bcgov-white dark:text-bcgov-black py-3 px-5 mx-8 rounded-lg font-semibold shadow-sm dark:shadow-none select-none "
-          onClick={handleStart}
-        >
-          Try Demo &nbsp;
-          <FiArrowRight className="inline h-6 pb-1" />
-        </motion.button>
-        <motion.button
-          variants={fade}
-          whileHover={buttonHover}
-          className="bg-white dark:bg-bcgov-blue text-black dark:text-white py-3 px-5 mx-8 mt-4 rounded-lg font-semibold shadow-sm dark:shadow-none select-none "
-          onClick={() => null}
-        >
-          Get to know us &nbsp;
-          <FiExternalLink className="inline h-6 pb-1" />
-        </motion.button>
-      </div> */}
-    </motion.div>
-  )
-
-  const renderDesktopTitle = (
+  const renderTitle = (
     <motion.div className="flex-1 text-left text-bcgov-black dark:text-bcgov-white font-semibold text-4xl lg:text-5xl xl:text-6xl m-auto">
       <div className="overflow-hidden py-1 leading-tight">
         <motion.h1 variants={landingTitle}>Verifiable Credential Showcase</motion.h1>
@@ -75,42 +36,73 @@ export const MainSection: React.FC = () => {
           secure.
         </motion.h2>
       </div>
-      {/* <div className="flex flex-row justify-start text-base sxl:text-lg  font-normal mt-6">
-        FIXME we need a tenant and showcase logic based on a tenant for this button */}
-      {/*<motion.button*/}
-      {/*  variants={fadeDelay}*/}
-      {/*  whileHover={buttonHover}*/}
-      {/*  className="bg-bcgov-blue dark:bg-bcgov-white text-bcgov-white dark:text-bcgov-black py-3 px-5 rounded-lg font-semibold shadow-sm dark:shadow-none select-none "*/}
-      {/*  onClick={handleStart}*/}
-      {/*>*/}
-      {/*  Get started &nbsp;*/}
-      {/*  <FiArrowRight className="inline h-6 pb-1" />*/}
-      {/*</motion.button>
-        <a href="https://digital.gov.bc.ca/digital-trust/" target="_blank">
-          <motion.button
-            variants={fadeDelay}
-            whileHover={buttonHover}
-            className="bg-white dark:bg-bcgov-gold text-black dark:text-bcgov-black py-3 px-5 rounded-lg font-semibold shadow-sm dark:shadow-none select-none "
-          >
-            <p className="inline">Get to know us &nbsp;</p>
-            <FiExternalLink className="inline h-6 pb-1" />
-          </motion.button>
-        </a>
-      </div> */}
+    </motion.div>
+  )
+
+  const renderShowcasesTable = (
+    <motion.div className="flex-1 flex items-center justify-center p-6" variants={fadeDelay}>
+      <div className="bg-white dark:bg-bcgov-darkgrey rounded-lg shadow-lg overflow-hidden w-full">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-bcgov-black dark:text-bcgov-white">Available Showcases</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-1/2">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-1/4">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-1/4">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-bcgov-darkgrey divide-y divide-gray-200 dark:divide-gray-700">
+              {availableShowcases.map((showcase) => (
+                <tr key={showcase.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-6 py-4 text-sm font-medium text-bcgov-black dark:text-bcgov-white">
+                    {showcase.name}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        showcase.status === 'Available'
+                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                          : 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                      }`}
+                    >
+                      {showcase.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                    <button
+                      className="bg-bcgov-blue dark:bg-bcgov-white text-bcgov-white dark:text-bcgov-black py-2 px-4 rounded-lg font-semibold shadow-sm dark:shadow-none select-none hover:opacity-90 transition-opacity"
+                      onClick={() => (window.location.href = showcase.url)}
+                    >
+                      Try Demo
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </motion.div>
   )
 
   return (
     <motion.div
-      className="flex flex-col md:flex-row dark:text-white flex-grow"
+      className="flex flex-col md:flex-row dark:text-white flex-grow items-center"
       initial="hidden"
       animate="show"
       exit="exit"
     >
-      {isMobile ? renderMobileTitle : renderDesktopTitle}
-      <div className="flex justify-center flex-grow">
-        <img className="m-5 max-w-lg" src={landingScreen} alt="bcgov-phone-light" />
-      </div>
+      {renderTitle}
+      {renderShowcasesTable}
     </motion.div>
   )
 }
