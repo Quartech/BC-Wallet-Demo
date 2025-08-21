@@ -32,6 +32,7 @@ const cacheOptions: CacheOptions = {
 
 export const demoBackendBaseRoute = getEnv('REACT_APP_BASE_ROUTE', '/digital-trust/showcase')
 export const demoBackendBaseWsUrl = getEnv('REACT_APP_DEMO_API_URL', '')
+export const walletBaseUrl = getEnv('REACT_APP_WALLET_URL', 'http://localhost:5002/digital-trust/showcase')
 export const demoBackendBaseUrl = demoBackendBaseWsUrl + demoBackendBaseRoute
 export const demoBackendSocketPath = `${demoBackendBaseRoute}/socket/`
 export const demoBackendApi = setupCache(
