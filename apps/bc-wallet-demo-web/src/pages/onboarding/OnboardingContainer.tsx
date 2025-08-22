@@ -16,7 +16,14 @@ import { clearConnection } from '../../slices/connection/connectionSlice'
 import { useCredentials } from '../../slices/credentials/credentialsSelectors'
 import { clearCredentials } from '../../slices/credentials/credentialsSlice'
 import { completeOnboarding, setScenario } from '../../slices/onboarding/onboardingSlice'
-import { useShowcases } from '../../slices/showcases/showcasesSelectors'
+import { basePath } from '../../utils/BasePath'
+import { getTenantIdFromPath, isConnected, isCredIssued } from '../../utils/Helpers'
+import { setOnboardingProgress } from '../../utils/OnboardingUtils'
+import { OnboardingBottomNav } from './components/OnboardingBottomNav'
+import { PersonaContent } from './components/PersonaContent'
+import { PickPersona } from './steps/PickPersona'
+import { SetupCompleted } from './steps/SetupCompleted'
+import { StepView } from './steps/StepView'
 import type {
   AcceptCredentialStepAction,
   CredentialDefinition,
@@ -78,6 +85,15 @@ export const OnboardingContainer: FC<Props> = ({
     }
   }, [scenarios, currentPersona, dispatch])
 
+  const credDefParts = credentialDefinitions && credentialDefinitions[0]?.identifier?.split(':')
+  const credName = credDefParts && credDefParts[credDefParts.length - 1]
+
+  useEffect((): void => {
+    if (!currentPersona && scenarios.length > 0) {
+      dispatch(setScenario(scenarios[0]))
+    }
+  }, [scenarios, currentPersona, dispatch])
+
   useEffect((): void => {
     setCurrentScenario(scenarios.find((scenario) => scenario.persona?.id === currentPersona?.id))
   }, [scenarios, currentPersona])
@@ -114,6 +130,45 @@ export const OnboardingContainer: FC<Props> = ({
 
   useEffect(() => {
     const handleTabClose = () => {
+      trackSelfDescribingEvent({
+        event: {
+          schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+          data: {
+            action: 'leave_on_tab_close',
+            path: currentPersona?.role.toLowerCase(),
+            step: currentStep,
+          },
+        },
+      })
+      dispatch({ type: 'demo/RESET' })
+    }
+
+    window.addEventListener('beforeunload', handleTabClose)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleTabClose)
+    }
+  }, [currentPersona, currentStep, dispatch])
+
+  const isBackDisabled: boolean = !currentStep || currentStep.order === 1
+  const isForwardDisabled: boolean = (() => {
+    if (!currentStep) {
+      return true;
+    }
+    const hasSetupConnection = !!currentStep?.actions?.some((action) => action.actionType === StepActionType.SetupConnection);
+    if (hasSetupConnection && !connectionCompleted) {
+      return true;
+    }
+    const hasAcceptCredential = !!currentStep?.actions?.some((action) => action.actionType === StepActionType.AcceptCredential);
+    if (hasAcceptCredential && (!credentialsAccepted || credentialDefinitions.length === 0)) {
+      return true;
+    }
+    return false;
+  })()
+
+  const nextOnboardingPage = async (): Promise<void> => {
+    const nextStep = currentScenario?.steps[currentStep !== undefined ? currentStep.order : 0]
+    if (nextStep) {
       trackSelfDescribingEvent({
         event: {
           schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
