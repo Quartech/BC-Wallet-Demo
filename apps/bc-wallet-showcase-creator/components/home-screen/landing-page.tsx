@@ -71,7 +71,7 @@ export const LandingPage = () => {
   }, [tenantId, setIssuerId, setRelayerId])
 
   const handleDeleteShowcase = async (showcaseSlug: string) => {
-   await deleteShowcase(showcaseSlug)
+    await deleteShowcase(showcaseSlug)
     reset()
     setScenarioIds([])
     setPersonaIds([])
@@ -94,9 +94,8 @@ export const LandingPage = () => {
   }
 
   const handleDuplicateShowcase = async (showcaseSlug: string) => {
-    const newShowcase = await duplicateShowcase(showcaseSlug, {
+    await duplicateShowcase(showcaseSlug, {
       onSuccess: (data: unknown) => {
-        console.log('Showcase Created:', data)
         toast.success('Showcase Duplicated')
       },
       onError: (error: unknown) => {
@@ -239,19 +238,18 @@ export const LandingPage = () => {
         </div>
       </section>
       <DeleteModal
-          isOpen={isModalOpen}
-          onClose={() => closeModal()}
-          onDelete={() => confirmDelete()}
-          header="Are you sure you want to delete this showcase?"
-          description="Are you sure you want to delete this showcase?"
-          subDescription="<b>This action cannot be undone.</b>"
-          cancelText="CANCEL"
-          deleteText="DELETE"
-          isLoading={isLoading}
-        />
+        isOpen={isModalOpen}
+        onClose={() => closeModal()}
+        onDelete={() => confirmDelete()}
+        header="Are you sure you want to delete this showcase?"
+        description="Are you sure you want to delete this showcase?"
+        subDescription="<b>This action cannot be undone.</b>"
+        cancelText="CANCEL"
+        deleteText="DELETE"
+        isLoading={isLoading}
+      />
     </>
   )
 }
 
 export default LandingPage
-

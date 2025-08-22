@@ -12,13 +12,11 @@ import { useTitle } from '../../hooks/useTitle'
 import { useConnection } from '../../slices/connection/connectionSelectors'
 import { useProof } from '../../slices/proof/proofSelectors'
 import { useShowcases } from '../../slices/showcases/showcasesSelectors'
+import { clearShowcase } from '../../slices/showcases/showcasesSlice'
 import { fetchPersonaBySlug, fetchScenarioBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
 import type { PresentationScenario } from '../../slices/types'
 import { useUseCaseState } from '../../slices/useCases/useCasesSelectors'
 import { basePath } from '../../utils/BasePath'
-import { Section } from './Section'
-import { fetchPersonaBySlug, fetchScenarioBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
-import { clearShowcase } from '../../slices/showcases/showcasesSlice'
 import { usePersonaSlug, useScenarioSlug, useSlug } from '../../utils/SlugUtils'
 import { PageNotFound } from '../PageNotFound'
 import { Section } from './Section'
@@ -28,14 +26,13 @@ export const UseCasePage: React.FC = () => {
   const { isLoading } = useUseCaseState()
   const { showcase, currentPersona, currentScenario } = useShowcases()
   const connection = useConnection()
-  const { proof, proofUrl } = useProof()
+  const { proof } = useProof()
   const showcaseSlug = useSlug()
   const personaSlug = usePersonaSlug()
   const scenarioSlug = useScenarioSlug()
-  const [scenario, setScenario] = useState<PresentationScenario>()
 
   const navigate = useNavigate()
-  useTitle(`${scenario?.name ?? 'Use case'} | BC Wallet Self-Sovereign Identity Demo`)
+  useTitle(`${currentScenario?.name ?? 'Use case'} | BC Wallet Self-Sovereign Identity Demo`)
 
   // useEffect(() => {
   //   trackPageView()

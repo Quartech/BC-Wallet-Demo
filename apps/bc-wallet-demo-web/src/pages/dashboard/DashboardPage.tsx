@@ -9,10 +9,10 @@ import { Modal } from '../../components/Modal'
 import { page } from '../../FramerAnimations'
 import { useAppDispatch } from '../../hooks/hooks'
 import { useTitle } from '../../hooks/useTitle'
-import { useCredentials } from '../../slices/credentials/credentialsSelectors'
 import { usePreferences } from '../../slices/preferences/preferencesSelectors'
 import { setDemoCompleted } from '../../slices/preferences/preferencesSlice'
 import { useShowcases } from '../../slices/showcases/showcasesSelectors'
+import { clearShowcase } from '../../slices/showcases/showcasesSlice'
 import { fetchPersonaBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
 import type { Scenario } from '../../slices/types'
 import { basePath } from '../../utils/BasePath'
@@ -23,23 +23,15 @@ import { PageNotFound } from '../PageNotFound'
 import { DemoCompletedModal } from './components/DemoCompletedModal'
 import { ProfileCard } from './components/ProfileCard'
 import { UseCaseContainer } from './components/UseCaseContainer'
-import { fetchPersonaBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
-import { clearShowcase } from '../../slices/showcases/showcasesSlice'
-import { usePersonaSlug, useSlug } from '../../utils/SlugUtils'
-import { PageNotFound } from '../PageNotFound'
-import { ScenarioType } from 'bc-wallet-openapi'
-import type { Scenario } from '../../slices/types'
 
 export const DashboardPage: React.FC = () => {
   useTitle('Dashboard | BC Wallet Self-Sovereign Identity Demo')
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { revokableCredentials } = useCredentials()
   const showcaseSlug = useSlug()
   const personaSlug = usePersonaSlug()
   const { showcase, currentPersona } = useShowcases()
-  const { completedUseCaseSlugs, demoCompleted, completeCanceled, revocationEnabled, showHiddenUseCases } =
-    usePreferences()
+  const { completedUseCaseSlugs, demoCompleted, completeCanceled } = usePreferences()
   const [scenarios, setScenarios] = useState<Scenario[]>([])
 
   useEffect(() => {
@@ -50,9 +42,9 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     const load = async () => {
-        dispatch(clearShowcase())
-        await dispatch(fetchShowcaseBySlug(showcaseSlug))
-        await dispatch(fetchPersonaBySlug(personaSlug))
+      dispatch(clearShowcase())
+      await dispatch(fetchShowcaseBySlug(showcaseSlug))
+      await dispatch(fetchPersonaBySlug(personaSlug))
     }
     void load()
   }, [dispatch, showcaseSlug, personaSlug])
