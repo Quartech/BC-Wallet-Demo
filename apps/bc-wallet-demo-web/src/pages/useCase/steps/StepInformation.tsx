@@ -17,7 +17,7 @@ export interface Props {
   asset?: string
   connection?: ConnectionState
   verifier?: RelyingParty
-  actions?: AriesOOBStepAction[]
+  actions?: StepAction[]
   proof?: any
   currentPersona: Persona
 }
