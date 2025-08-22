@@ -118,16 +118,16 @@ export const OnboardingContainer: FC<Props> = ({
 
   useEffect(() => {
     const handleTabClose = () => {
-      trackSelfDescribingEvent({
-        event: {
-          schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-          data: {
-            action: 'leave_on_tab_close',
-            path: currentPersona?.role.toLowerCase(),
-            step: currentStep,
-          },
-        },
-      })
+      // trackSelfDescribingEvent({
+      //   event: {
+      //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+      //     data: {
+      //       action: 'leave_on_tab_close',
+      //       path: currentPersona?.role.toLowerCase(),
+      //       step: currentStep,
+      //     },
+      //   },
+      // })
       dispatch({ type: 'demo/RESET' })
     }
 
