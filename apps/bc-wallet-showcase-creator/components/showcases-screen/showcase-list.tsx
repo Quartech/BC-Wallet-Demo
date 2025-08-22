@@ -34,7 +34,7 @@ export const ShowcaseList = () => {
   const t = useTranslations()
   const { data, isLoading } = useShowcases()
   const { mutateAsync: deleteShowcase } = useDeleteShowcase()
-  const { reset, setScenarioIds,setPersonaIds } = useShowcaseStore()
+  const { reset, setScenarioIds, setPersonaIds } = useShowcaseStore()
   const { mutateAsync: duplicateShowcase } = useDuplicateShowcase()
   const { data: credentials } = useCredentialDefinitions()
   const resetIds = usePresentationCreation().reset
@@ -64,40 +64,40 @@ export const ShowcaseList = () => {
     return showcase.name.toLowerCase().includes(searchTerm.toLowerCase())
   }
 
-    const { setIssuerId, setRelayerId } = useHelpersStore()
-  
-    useEffect(() => {
-      const fetchTenantConfig = async () => {
-        if (tenantId) {
-          try {
-            const endpoint = `${env.NEXT_PUBLIC_SHOWCASE_API_URL}/tenants/${tenantId}`
-            const response = await fetch(endpoint, {
-              method: 'GET',
-              headers: {
-                Accept: 'application/json',
-              },
-            })
-  
-            if (!response.ok) {
-              throw new Error(`Failed to fetch tenant config for ${tenantId}.`)
-            }
-  
-            const tenantResponse = (await response.json()) as TenantResponse
-            if (tenantResponse.tenant.issuers && tenantResponse.tenant.relyingParties) {
-              setIssuerId(tenantResponse.tenant.issuers[0].id)
-              setRelayerId(tenantResponse.tenant.relyingParties[0].id)
-            }
-          } catch (error) {
-            console.error('Error fetching tenant config:', error)
+  const { setIssuerId, setRelayerId } = useHelpersStore()
+
+  useEffect(() => {
+    const fetchTenantConfig = async () => {
+      if (tenantId) {
+        try {
+          const endpoint = `${env.NEXT_PUBLIC_SHOWCASE_API_URL}/tenants/${tenantId}`
+          const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+            },
+          })
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch tenant config for ${tenantId}.`)
           }
+
+          const tenantResponse = (await response.json()) as TenantResponse
+          if (tenantResponse.tenant.issuers && tenantResponse.tenant.relyingParties) {
+            setIssuerId(tenantResponse.tenant.issuers[0].id)
+            setRelayerId(tenantResponse.tenant.relyingParties[0].id)
+          }
+        } catch (error) {
+          console.error('Error fetching tenant config:', error)
         }
       }
-  
-      void fetchTenantConfig()
-    }, [tenantId, setIssuerId, setRelayerId])
+    }
+
+    void fetchTenantConfig()
+  }, [tenantId, setIssuerId, setRelayerId])
 
   const handleDeleteShowcase = async (showcaseSlug: string) => {
-   await deleteShowcase(showcaseSlug)
+    await deleteShowcase(showcaseSlug)
     reset()
     setScenarioIds([])
     setPersonaIds([])
@@ -136,17 +136,16 @@ export const ShowcaseList = () => {
     }
   }
 
-  const UpdateShowcaseStatus = async(showcase: Showcase) => {
-    
-    const showcaseRequest = showcaseToShowcaseRequest(showcase);
+  const UpdateShowcaseStatus = async (showcase: Showcase) => {
+    const showcaseRequest = showcaseToShowcaseRequest(showcase)
     const updatedShowcase = {
       ...showcaseRequest,
-      status: ShowcaseStatus.Pending
-    };
-  
+      status: ShowcaseStatus.Pending,
+    }
+
     const response = await apiClient.put(`/showcases/${showcase.slug}`, updatedShowcase)
 
-    if(response) {
+    if (response) {
       queryClient.invalidateQueries({ queryKey: ['showcase', showcase.slug] })
       queryClient.invalidateQueries({ queryKey: ['showcases'] })
       router.push(`/${tenantId}/showcases/${showcase.slug}`)
@@ -166,7 +165,7 @@ export const ShowcaseList = () => {
       router.push(`/${tenantId}/showcases/create`)
     }
   }
-  
+
   return (
     <div className="flex-1 bg-light-bg dark:bg-dark-bg dark:text-dark-text text-light-text min-h-[calc(100vh-40px)]">
       <Header
@@ -262,8 +261,14 @@ export const ShowcaseList = () => {
                             }}
                           />
 
-                          <CopyButton disabled={showcase.status !== 'ACTIVE'} value={`${WALLET_URL}/${tenantId}/${showcase.slug}`} />
-                          <OpenButton disabled={showcase.status !== 'ACTIVE'} value={`${WALLET_URL}/${tenantId}/${showcase.slug}`} />
+                          <CopyButton
+                            disabled={showcase.status !== 'ACTIVE'}
+                            value={`${WALLET_URL}/${tenantId}/${showcase.slug}`}
+                          />
+                          <OpenButton
+                            disabled={showcase.status !== 'ACTIVE'}
+                            value={`${WALLET_URL}/${tenantId}/${showcase.slug}`}
+                          />
                         </div>
                       </div>
                     </div>
@@ -311,14 +316,15 @@ export const ShowcaseList = () => {
 
                     <div className="flex gap-4 mt-auto">
                       <Link className="w-1/2" href={`/${tenantId}/showcases/${showcase.slug}`}>
-                        <ButtonOutline
-                          onClick={() => UpdateShowcaseStatus(showcase)}
-                          className="w-full"
-                        >
+                        <ButtonOutline onClick={() => UpdateShowcaseStatus(showcase)} className="w-full">
                           {t('action.edit_label')}
                         </ButtonOutline>
                       </Link>
-                      <ButtonOutline disabled={showcase.status !== 'ACTIVE'} onClick={() => handleDuplicateShowcase(showcase.slug)} className="w-1/2">
+                      <ButtonOutline
+                        disabled={showcase.status !== 'ACTIVE'}
+                        onClick={() => handleDuplicateShowcase(showcase.slug)}
+                        className="w-1/2"
+                      >
                         {t('action.create_copy_label')}
                       </ButtonOutline>
                     </div>
@@ -329,17 +335,17 @@ export const ShowcaseList = () => {
         </div>
       </section>
 
-        <DeleteModal
-          isOpen={isModalOpen}
-          onClose={() => closeModal()}
-          onDelete={() => confirmDelete()}
-          header="Are you sure you want to delete this showcase?"
-          description="Are you sure you want to delete this showcase?"
-          subDescription="<b>This action cannot be undone.</b>"
-          cancelText="CANCEL"
-          deleteText="DELETE"
-          isLoading={isLoading}
-        />
+      <DeleteModal
+        isOpen={isModalOpen}
+        onClose={() => closeModal()}
+        onDelete={() => confirmDelete()}
+        header="Are you sure you want to delete this showcase?"
+        description="Are you sure you want to delete this showcase?"
+        subDescription="<b>This action cannot be undone.</b>"
+        cancelText="CANCEL"
+        deleteText="DELETE"
+        isLoading={isLoading}
+      />
     </div>
   )
 }

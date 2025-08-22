@@ -97,7 +97,6 @@ export const ProofAttributesCard: React.FC<Props> = ({ entityName, requestedCred
             </div>
             <hr className="text-bcgov-lightgrey" />
           </div>
-          <div className="flex flex-col">{renderRequestedCreds}</div>
         </div>
       }
     </>

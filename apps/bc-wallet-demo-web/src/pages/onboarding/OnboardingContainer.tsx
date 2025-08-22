@@ -27,7 +27,7 @@ import type {
 } from '../../slices/types'
 import { fetchWallets } from '../../slices/wallets/walletsThunks'
 import { basePath } from '../../utils/BasePath'
-import { getTenantIdFromPath, isConnected, isCredIssued } from '../../utils/Helpers'
+import { getTenantIdFromPath, isConnected } from '../../utils/Helpers'
 import { setOnboardingProgress } from '../../utils/OnboardingUtils'
 import { OnboardingBottomNav } from './components/OnboardingBottomNav'
 import { PersonaContent } from './components/PersonaContent'
@@ -101,7 +101,11 @@ export const OnboardingContainer: FC<Props> = ({
   }, [currentStep])
 
   useEffect((): void => {
-    setCredentialsAccepted(credentialDefinitions?.every((credentialDefinition: CredentialDefinition) => issuedCredentials.includes(credName)))
+    setCredentialsAccepted(
+      credentialDefinitions?.every((credentialDefinition: CredentialDefinition) =>
+        issuedCredentials.includes(credName),
+      ),
+    )
   }, [credentialDefinitions, issuedCredentials])
 
   useEffect((): void => {
