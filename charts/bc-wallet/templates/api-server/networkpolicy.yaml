@@ -1,0 +1,64 @@
+{{- if .Values.apiServer.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "bc-wallet.fullname" . }}-api-server
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: api-server
+    {{- include "bc-wallet.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: api-server
+      {{- include "bc-wallet.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+{{- if and .Values.ingress.enabled .Values.apiServer.networkPolicy.ingress.enabled }}
+      {{- with .Values.apiServer.networkPolicy.ingress.namespaceSelector }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+{{ toYaml . | indent 14 }}
+      {{- end }}
+      {{- with .Values.apiServer.networkPolicy.ingress.podSelector }}
+    - from:
+        - podSelector:
+            matchLabels:
+{{ toYaml . | indent 14 }}
+      {{- end }}
+    {{- end }}
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: showcase-creator
+              {{- include "bc-wallet.selectorLabels" . | nindent 14 }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.apiServer.service.port }}
+
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: rabbitmq
+              app.kubernetes.io/instance: {{ .Release.Name }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.rabbitmq.service.ports.amqp }}
+
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: demo-web
+              {{- include "bc-wallet.selectorLabels" . | nindent 14 }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.apiServer.service.port }}
+
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: rabbitmq
+              app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

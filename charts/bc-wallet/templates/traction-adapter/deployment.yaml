@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bc-wallet.fullname" . }}-traction-adapter
+  labels:
+    app.kubernetes.io/component: traction-adapter
+    {{- include "bc-wallet.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.tractionAdapter.autoscaling.enabled }}
+  replicas: {{ .Values.tractionAdapter.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: traction-adapter
+      {{- include "bc-wallet.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.tractionAdapter.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/component: traction-adapter
+        {{- include "bc-wallet.labels" . | nindent 8 }}
+        {{- with .Values.tractionAdapter.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.tractionAdapter.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "bc-wallet.serviceAccountName" . }}
+      {{- with .Values.tractionAdapter.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-rabbitmq
+          image: busybox
+          command: ['sh', '-c', 'until nc -z {{ .Release.Name }}-rabbitmq {{ .Values.rabbitmq.service.ports.amqp | quote }}; do echo waiting for rabbitmq; sleep 2; done; sleep 10;']
+      containers:
+        - name: traction-adapter
+          {{- with .Values.tractionAdapter.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.tractionAdapter.image.repository }}:{{ .Values.tractionAdapter.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.tractionAdapter.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.tractionAdapter.service.port }}
+              protocol: TCP
+          env:
+            - name: AMQ_HOST
+              value: {{.Release.Name}}-rabbitmq
+            - name: AMQ_PORT
+              value: {{ .Values.rabbitmq.service.ports.amqp | quote }}
+            - name: AMQ_TRANSPORT
+              value: tcp
+            - name: AMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "bc-wallet.rabbitmq.secret.name" . }}
+                  key: {{ include "bc-wallet.rabbitmq.passwordKey" . }}
+            - name: AMQ_USERNAME
+              value: {{ .Values.rabbitmq.auth.username | quote }}
+            - name: LOG_LEVEL # TODO remove when all stable
+              value: debug
+            - name: TRACTION_DEFAULT_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.tractionAdapter.secretName | default "bc-wallet-secrets" | quote }}
+                  key: TRACTION_API_URL
+            - name: TRACTION_DEFAULT_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.tractionAdapter.secretName | default "bc-wallet-secrets" | quote }}
+                  key: OIDC_DEFAULT_TENANT
+            - name: TRACTION_DEFAULT_WALLET_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.tractionAdapter.secretName | default "bc-wallet-secrets" | quote }}
+                  key: WALLET_ID
+            - name: TRACTION_DEFAULT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.tractionAdapter.secretName | default "bc-wallet-secrets" | quote }}
+                  key: API_KEY
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.tractionAdapter.secretName | default "bc-wallet-secrets" | quote }}
+                  key: ENCRYPTION_KEY
+          {{- include "bc-wallet.renderEnvFrom" (list "tractionAdapter" .) | nindent 10 }}
+          {{- with .Values.tractionAdapter.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tractionAdapter.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tractionAdapter.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tractionAdapter.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.tractionAdapter.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tractionAdapter.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tractionAdapter.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tractionAdapter.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
