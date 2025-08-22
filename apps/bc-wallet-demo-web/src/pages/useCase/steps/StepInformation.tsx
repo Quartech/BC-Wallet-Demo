@@ -17,7 +17,7 @@ export interface Props {
   asset?: string
   connection?: ConnectionState
   verifier?: RelyingParty
-  actions?: AriesOOBStepAction[]
+  actions?: StepAction[]
   proof?: any
   currentPersona: Persona
 }
@@ -43,6 +43,7 @@ export const StepInformation: FC<Props> = (props: Props) => {
           )
         }
         case StepActionType.AriesOob: {
+          //@ts-ignore
           if (!action.credentialDefinitions || action.credentialDefinitions.length === 0) {
             return
           }
@@ -53,14 +54,16 @@ export const StepInformation: FC<Props> = (props: Props) => {
               characterType={currentPersona.role.toLowerCase()}
               proof={proof}
               connectionId={connection?.id ?? ''}
-              requestedCredentials={(action.credentialDefinitions || []).map((credentialDefinition) => ({
-                name: credentialDefinition.name,
-                icon: credentialDefinition.icon,
-                schema_id: credentialDefinition.schema.identifier,
-                properties:
-                  credentialDefinition.proofRequest?.attributes?.[credentialDefinition.schema.name].attributes,
-                predicates: credentialDefinition.proofRequest?.predicates?.[credentialDefinition.schema.name],
-              }))}
+              requestedCredentials={((action as AriesOOBStepAction).credentialDefinitions || []).map(
+                (credentialDefinition) => ({
+                  name: credentialDefinition.name,
+                  icon: credentialDefinition.icon,
+                  schema_id: credentialDefinition.schema.identifier,
+                  properties:
+                    credentialDefinition.proofRequest?.attributes?.[credentialDefinition.schema.name].attributes,
+                  predicates: credentialDefinition.proofRequest?.predicates?.[credentialDefinition.schema.name],
+                }),
+              )}
               requestOptions={{
                 title: action.title,
                 text: action.text,
