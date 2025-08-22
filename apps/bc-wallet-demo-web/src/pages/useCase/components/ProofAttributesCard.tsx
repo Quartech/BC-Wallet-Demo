@@ -89,16 +89,17 @@ export const ProofAttributesCard: React.FC<Props> = ({ entityName, requestedCred
 
   return (
     <>
-    {(
-      <div className="flex flex-col bg-bcgov-white dark:bg-bcgov-black p-4 md:mb-8 rounded-lg shadow max-h-64 my-2 sm:max-h-72 md:max-h-96 overflow-auto">
-        <div className="flex-1-1 title">
-          <div className="flex flex-row">
-            <h1 className="flex flex-1 font-semibold dark:text-white">{entityName} would like to know:</h1>
-            <div className="flex-1-1 h-8 mb-2">{proofReceived ? <CheckMark /> : <Loader />}</div>
+      {
+        <div className="flex flex-col bg-bcgov-white dark:bg-bcgov-black p-4 md:mb-8 rounded-lg shadow max-h-64 my-2 sm:max-h-72 md:max-h-96 overflow-auto">
+          <div className="flex-1-1 title">
+            <div className="flex flex-row">
+              <h1 className="flex flex-1 font-semibold dark:text-white">{entityName} would like to know:</h1>
+              <div className="flex-1-1 h-8 mb-2">{proofReceived ? <CheckMark /> : <Loader />}</div>
+            </div>
+            <div className="flex flex-col">{renderRequestedCreds}</div>
           </div>
-          <div className="flex flex-col">{renderRequestedCreds}</div>
         </div>
-      )}
+      }
     </>
   )
 }

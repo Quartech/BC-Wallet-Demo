@@ -27,7 +27,7 @@ import type {
 } from '../../slices/types'
 import { fetchWallets } from '../../slices/wallets/walletsThunks'
 import { basePath } from '../../utils/BasePath'
-import { getTenantIdFromPath, isConnected, isCredIssued } from '../../utils/Helpers'
+import { getTenantIdFromPath, isConnected } from '../../utils/Helpers'
 import { setOnboardingProgress } from '../../utils/OnboardingUtils'
 import { OnboardingBottomNav } from './components/OnboardingBottomNav'
 import { PersonaContent } from './components/PersonaContent'
@@ -78,15 +78,6 @@ export const OnboardingContainer: FC<Props> = ({
     }
   }, [scenarios, currentPersona, dispatch])
 
-  const credDefParts = credentialDefinitions && credentialDefinitions[0]?.identifier?.split(':')
-  const credName = credDefParts && credDefParts[credDefParts.length - 1]
-
-  useEffect((): void => {
-    if (!currentPersona && scenarios.length > 0) {
-      dispatch(setScenario(scenarios[0]))
-    }
-  }, [scenarios, currentPersona, dispatch])
-
   useEffect((): void => {
     setCurrentScenario(scenarios.find((scenario) => scenario.persona?.id === currentPersona?.id))
   }, [scenarios, currentPersona])
@@ -110,7 +101,11 @@ export const OnboardingContainer: FC<Props> = ({
   }, [currentStep])
 
   useEffect((): void => {
-    setCredentialsAccepted(credentialDefinitions?.every((credentialDefinition: CredentialDefinition) => issuedCredentials.includes(credName)))
+    setCredentialsAccepted(
+      credentialDefinitions?.every((credentialDefinition: CredentialDefinition) =>
+        issuedCredentials.includes(credName),
+      ),
+    )
   }, [credentialDefinitions, issuedCredentials])
 
   useEffect((): void => {

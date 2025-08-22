@@ -9,7 +9,6 @@ import { Modal } from '../../components/Modal'
 import { page } from '../../FramerAnimations'
 import { useAppDispatch } from '../../hooks/hooks'
 import { useTitle } from '../../hooks/useTitle'
-import { useCredentials } from '../../slices/credentials/credentialsSelectors'
 import { usePreferences } from '../../slices/preferences/preferencesSelectors'
 import { setDemoCompleted } from '../../slices/preferences/preferencesSlice'
 import { useShowcases } from '../../slices/showcases/showcasesSelectors'
@@ -29,12 +28,10 @@ export const DashboardPage: React.FC = () => {
   useTitle('Dashboard | BC Wallet Self-Sovereign Identity Demo')
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { revokableCredentials } = useCredentials()
   const showcaseSlug = useSlug()
   const personaSlug = usePersonaSlug()
   const { showcase, currentPersona } = useShowcases()
-  const { completedUseCaseSlugs, demoCompleted, completeCanceled, revocationEnabled, showHiddenUseCases } =
-    usePreferences()
+  const { completedUseCaseSlugs, demoCompleted, completeCanceled } = usePreferences()
   const [scenarios, setScenarios] = useState<Scenario[]>([])
 
   useEffect(() => {
