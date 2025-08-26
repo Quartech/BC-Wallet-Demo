@@ -129,18 +129,18 @@ const isInvalidServiceStep = Array.from(personaScenarios).some(([_, scenarioList
         return {
           ...baseDefaults,
           // @ts-expect-error - database still do not persist the setupTitle
-          setupTitle: currentAction.setupTitle || '1. Download BC Wallet on your phone',
+          setupTitle: currentAction.setupTitle || '1. Download Quartech Wallet on your phone',
           // @ts-expect-error - database still do not persist the setupDescription1
           setupDescription1: currentAction.setupDescription1 || 
-            "To download, scan this QR code with your phone or select the app store icon below. You can also search for BC Wallet in your phone's app store.",
+            "To download, scan this QR code with your phone or select the app store icon below. You can also search for Quartech Wallet in your phone's app store.",
           // @ts-expect-error - database still do not persist 
           setupTitle2: currentAction.setupTitle2 || '2. Complete the setup',
           // @ts-expect-error - database still do not persist the setupDescription2
           setupDescription2: currentAction.setupDescription2 || 'Complete the onboarding process in the app.',
           // @ts-expect-error - database still do not persist the apple
-          apple: currentAction.apple || 'https://apps.apple.com/ca/app/bc-wallet/id6444150782',
+          apple: currentAction.apple || 'https://github.com/Quartech/quartech-wallet/releases',
           // @ts-expect-error - database still do not persist the android
-          android: currentAction.android || 'https://play.google.com/store/apps/details?id=ca.bc.gov.BCWallet',
+          android: currentAction.android || 'https://github.com/Quartech/quartech-wallet/releases',
           // @ts-expect-error - database still do not persist the ledgerImage
           ledgerImage: currentAction.ledgerImage ||
             'https://play-lh.googleusercontent.com/eEYm6AaDGNFcE1riIW7W-R8RJvDgVVakjr2gnxdeUOngsb9EZWZ9p2zPDBHybiS0lUJu=w240-h480-rw',
@@ -150,7 +150,7 @@ const isInvalidServiceStep = Array.from(personaScenarios).some(([_, scenarioList
         return {
           ...baseDefaults,
           // @ts-expect-error - database still do not persist the qrCodeTitle
-          qrCodeTitle: currentAction.qrCodeTitle || 'Scan this QR code with your BC Wallet app',
+          qrCodeTitle: currentAction.qrCodeTitle || 'Scan this QR code with your Quartech Wallet app',
         };
       case StepActionType.AriesOob:
         return {
