@@ -12,3 +12,5 @@ export const Wallets: Wallet[] = [
     android: '/#',
   },
 ]
+
+// TODO: remove hardcoded wallets
