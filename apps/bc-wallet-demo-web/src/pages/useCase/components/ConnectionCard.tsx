@@ -7,7 +7,13 @@ export interface Props {
   entity: string
 }
 
+//TODO: update this to use the showcase name from the showcase manager
+const RelayPartyPresentationNames = ['california-dmv-mdl-showcase', 'la-metro-volunteer-showcase']
+
 export const ConnectionCard: React.FC<Props> = ({ icon, entity }) => {
+  const route = window.location.pathname //e.g. /digital-trust/showcase/showcase-manager-tenant/california-dmv-mdl-showcase
+  const showcaseName = route.split('/')[4] //e.g. california-dmv-mdl-showcase
+
   return (
     <div className="flex flex-col bg-white dark:bg-bcgov-darkgrey p-4 mb-4 h-auto rounded-lg shadow">
       <div className="flex-1-1 title">
@@ -21,7 +27,7 @@ export const ConnectionCard: React.FC<Props> = ({ icon, entity }) => {
           </div>
         )}
         <div className="flex-1 px-4 justify-self-start dark:text-white">
-          <p>{entity}</p>
+          <p>{RelayPartyPresentationNames.includes(showcaseName) ? 'L.A. Metro' : entity}</p>
         </div>
       </div>
     </div>
