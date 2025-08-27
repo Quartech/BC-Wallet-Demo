@@ -61,7 +61,7 @@ spec:
             - name: REACT_APP_BASE_ROUTE
               value: {{ .Values.demoWeb.baseRoute | quote }}
             - name: REACT_APP_WALLET_QR_CODE_URL
-              value: https://digital.gov.bc.ca/design/digital-trust/digital-credentials/bc-wallet
+              value: {{ .Values.demoWeb.walletQrCodeUrl | quote }}
             - name: DEMOWEB_SNOWPLOW_ENDPOINT
               value: {{ .Values.demoWeb.snowplowEndpoint | quote }}
             - name: DEMOWEB_INSIGHTS_PROJECT_ID
