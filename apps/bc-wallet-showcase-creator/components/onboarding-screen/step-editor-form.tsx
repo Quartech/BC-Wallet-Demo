@@ -138,9 +138,9 @@ const isInvalidServiceStep = Array.from(personaScenarios).some(([_, scenarioList
           // @ts-expect-error - database still do not persist the setupDescription2
           setupDescription2: currentAction.setupDescription2 || 'Complete the onboarding process in the app.',
           // @ts-expect-error - database still do not persist the apple
-          apple: currentAction.apple || 'https://github.com/Quartech/quartech-wallet/releases',
+          apple: currentAction.apple || 'https://github.com/Quartech/quartech-wallet/releases', // TODO: update this
           // @ts-expect-error - database still do not persist the android
-          android: currentAction.android || 'https://github.com/Quartech/quartech-wallet/releases',
+          android: currentAction.android || 'https://github.com/Quartech/quartech-wallet/releases', // TODO: update this
           // @ts-expect-error - database still do not persist the ledgerImage
           ledgerImage: currentAction.ledgerImage ||
             'https://play-lh.googleusercontent.com/eEYm6AaDGNFcE1riIW7W-R8RJvDgVVakjr2gnxdeUOngsb9EZWZ9p2zPDBHybiS0lUJu=w240-h480-rw',

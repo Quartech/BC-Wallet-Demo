@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { demoBackendBaseUrl } from '../../../api/BaseUrl'
+import { demoBackendBaseUrl, walletQrCodeUrl } from '../../../api/BaseUrl'
 import appStore from '../../../assets/light/app-store-badge.svg'
 import playStore from '../../../assets/light/google-play-badge.png'
 import { SmallButton } from '../../../components/SmallButton'
@@ -30,7 +30,7 @@ export const WalletModal: React.FC<Props> = ({ isWalletModalOpen, setIsWalletMod
     return window.innerWidth <= 760
   }
 
-  const BC_Wallet_QR_Code = process.env.REACT_APP_WALLET_QR_CODE_URL ?? `${demoBackendBaseUrl}/qr`
+  const BC_Wallet_QR_Code = walletQrCodeUrl ?? `${demoBackendBaseUrl}/qr`
 
   return (
     <AnimatePresence>
@@ -79,6 +79,7 @@ export const WalletModal: React.FC<Props> = ({ isWalletModalOpen, setIsWalletMod
                         marginBottom: '10px',
                       }}
                     >
+                      {/* TODO: update this */}
                       <a href="https://github.com/Quartech/quartech-wallet/releases" target="_blank">
                         <img
                           src={appStore}
@@ -90,6 +91,7 @@ export const WalletModal: React.FC<Props> = ({ isWalletModalOpen, setIsWalletMod
                           alt="app store"
                         />
                       </a>
+                      {/* TODO: update this */}
                       <a href="https://github.com/Quartech/quartech-wallet/releases" target="_blank">
                         <img
                           src={playStore}
