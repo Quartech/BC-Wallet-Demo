@@ -25,12 +25,12 @@ export const CredentialsImport = () => {
   const { mutateAsync: importCredentialSchema } = useImportCredentialSchema()
   const { mutateAsync: importCredentialDefinition } = useImportCredentialDefinition()
   const queryClient = useQueryClient()
-  const { tenantId } = useTenant();
+  const { tenantId } = useTenant()
   const [loader, setLoader] = useState(false)
 
   const defaultValues: CredentialImportFormData = {
     credentialId: '',
-    schemaId: ''
+    schemaId: '',
   }
 
   const form = useForm<CredentialImportFormData>({
@@ -42,13 +42,13 @@ export const CredentialsImport = () => {
   const onSubmit = async (data: CredentialImportFormData) => {
     try {
       setLoader(true)
-      const { schemaPrefix, schemaVersion } = parseSchemaId(data.schemaId);
+      const { schemaPrefix, schemaVersion } = parseSchemaId(data.schemaId)
 
       const importSchemaPayload: CredentialSchemaImportRequest = {
         name: schemaPrefix,
         identifierType: IdentifierType.Did,
         identifier: data.schemaId,
-        version: schemaVersion
+        version: schemaVersion,
       }
 
       const SchemaResponse = await importCredentialSchema(importSchemaPayload)
@@ -58,35 +58,33 @@ export const CredentialsImport = () => {
         return // Stop execution if schema import fails
       }
 
-      setTimeout(async() => {  
+      setTimeout(async () => {
         const credDefTag = data.credentialId.split(':')[4]
         const importCredentialDefinitionPayload: CredentialDefinitionImportRequest = {
           name: credDefTag,
           identifierType: IdentifierType.Did,
           identifier: data.credentialId,
           tenantId: tenantId,
-          version: schemaVersion
+          version: schemaVersion,
         }
-        
+
         const CredentialDefinitionResponse = await importCredentialDefinition(importCredentialDefinitionPayload)
-        if(!CredentialDefinitionResponse) {
+        if (!CredentialDefinitionResponse) {
           toast.error('Failed to import CredentialDefinition')
           setLoader(false)
           return // Stop execution if credential definition import fails
         }
-  
+
         setTimeout(() => {
           form.reset()
-          toast.success('Credential imported successfully');
+          toast.success('Credential imported successfully')
           setLoader(false)
           queryClient.invalidateQueries({ queryKey: ['credentialDefinitions'] })
-        }, 5000);
-      }, 7000);
-
-
+        }, 5000)
+      }, 7000)
     } catch (error) {
-      console.error('onSubmit: Error during credential import process:', error);
-      toast.error('Error importing schema or CredentialDefinition');
+      console.error('onSubmit: Error during credential import process:', error)
+      toast.error('Error importing schema or CredentialDefinition')
       setLoader(false)
     }
   }
@@ -97,7 +95,7 @@ export const CredentialsImport = () => {
 
   return (
     <Form {...form}>
-     {loader && <Loader text='Credential importing...' />}
+      {loader && <Loader text="Credential importing..." />}
       <form onSubmit={form.handleSubmit(onSubmit)} className="my-4 flex flex-col">
         <div className="flex flex-col gap-x-2 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-bold ">{t('credentials.import_header_title')}</h3>

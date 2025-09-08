@@ -44,8 +44,8 @@ export const StepInformation: FC<Props> = (props: Props) => {
         }
         case StepActionType.AriesOob: {
           //@ts-ignore
-                if (!action.credentialDefinitions || action.credentialDefinitions.length === 0) {
-              return
+          if (!action.credentialDefinitions || action.credentialDefinitions.length === 0) {
+            return
           }
           return (
             <PresentCredentialAction

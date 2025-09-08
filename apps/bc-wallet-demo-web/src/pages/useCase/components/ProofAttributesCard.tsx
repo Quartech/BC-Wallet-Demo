@@ -73,7 +73,8 @@ export const ProofAttributesCard: React.FC<Props> = ({ entityName, requestedCred
               </div>
             )
           })}
-          {item.predicates && item.predicates.length > 0 &&
+          {item.predicates &&
+            item.predicates.length > 0 &&
             item.predicates.map((predicate) => (
               <div className="flex flex-row" key={predicate.name}>
                 <div

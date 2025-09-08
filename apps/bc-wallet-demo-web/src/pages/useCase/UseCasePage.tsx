@@ -20,7 +20,6 @@ import { basePath } from '../../utils/BasePath'
 import { usePersonaSlug, useScenarioSlug, useSlug } from '../../utils/SlugUtils'
 import { PageNotFound } from '../PageNotFound'
 import { Section } from './Section'
-import { clearShowcase } from '../../slices/showcases/showcasesSlice'
 
 export const UseCasePage: React.FC = () => {
   const dispatch = useAppDispatch()

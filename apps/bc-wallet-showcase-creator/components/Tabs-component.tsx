@@ -12,7 +12,7 @@ export default function TabsComponent({ slug }: { slug: string }) {
   const pathname = usePathname()
   const { tenantId } = useTenant()
   const { showcase, setShowcase } = useShowcaseStore()
-  const { data: showcaseData } = useShowcase(slug, { enabled: slug !== 'create' }) 
+  const { data: showcaseData } = useShowcase(slug, { enabled: slug !== 'create' })
   useEffect(() => {
     if (slug !== 'create' && showcaseData?.showcase && showcaseData.showcase.slug) {
       //@ts-ignore
