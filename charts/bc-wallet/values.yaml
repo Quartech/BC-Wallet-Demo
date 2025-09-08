@@ -59,7 +59,7 @@ apiServer:
     repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-api-server 
     #ghcr.io/bcgov/bc-wallet-api-server
     # This sets the pull policy for images.
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
@@ -172,7 +172,7 @@ demoServer:
     repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-server 
     #ghcr.io/bcgov/bc-wallet-demo-server
     # This sets the pull policy for images.
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
@@ -287,7 +287,7 @@ demoWeb:
     repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-web 
     #ghcr.io/bcgov/bc-wallet-demo-web
     # This sets the pull policy for images.
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
@@ -299,6 +299,7 @@ demoWeb:
   snowplowEndpoint: spm.trustservices.quartech.com 
   #spm.apps.gov.bc.ca #TODO: change to spm.trustservices.quartech.com
   insightsProjectId: your_insights_project_id
+  walletQrCodeUrl: https://github.com/Quartech/quartech-wallet/releases
 
   # Name of ConfigMap with extra environment variables; overrides global.extraEnvVarsCM if set
   extraEnvVarsCM: ""
@@ -402,7 +403,7 @@ showcaseCreator:
     repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-showcase-creator 
     #ghcr.io/bcgov/bc-wallet-showcase-creator
     # This sets the pull policy for images.
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
@@ -515,7 +516,7 @@ tractionAdapter:
     repository: crsharedakscluster.azurecr.io/quartech/showcase-manager-traction-adapter 
     #ghcr.io/bcgov/bc-wallet-traction-adapter
     # This sets the pull policy for images.
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
