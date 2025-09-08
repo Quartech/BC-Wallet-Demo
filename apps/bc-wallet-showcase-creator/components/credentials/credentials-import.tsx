@@ -60,13 +60,12 @@ export const CredentialsImport = () => {
 
       setTimeout(async() => {  
         const credDefTag = data.credentialId.split(':')[4]
-  
         const importCredentialDefinitionPayload: CredentialDefinitionImportRequest = {
           name: credDefTag,
           identifierType: IdentifierType.Did,
           identifier: data.credentialId,
           tenantId: tenantId,
-          version: schemaVersion
+          version: schemaVersion,
         }
         
         const CredentialDefinitionResponse = await importCredentialDefinition(importCredentialDefinitionPayload)
