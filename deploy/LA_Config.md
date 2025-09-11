@@ -1,11 +1,12 @@
 Credentials:
 
 Name: la-metro-volunteer-id
-Version: 1.0
+Version: 1.4.4
 
 Attributes:
     Name: STRING
     Role: STRING
+    Photo: STRING
     ISS: DATE
     EXP: DATE
 
@@ -13,29 +14,36 @@ Showcase Manager:
 
 Name: L.A. Metro Volunteer Showcase
 Description: 
-    This showcase focuses on the volunteer credential flow, where an California Resident with an existing mobile driver's license (mDL) credential obtains a volunteer credential for L.A. Metro. The volunteer will be able to use this credential to verify their identity and volunteer status at Metro facilities and events.
+    This showcase focuses on the volunteer credential flow, where an Dale Randall with an existing mobile driver's license (mDL) credential obtains a volunteer credential for L.A. Metro. The volunteer will be able to use this credential to verify their identity and volunteer status at Metro facilities and events.
 
 
 Showcase Completion Details:
     Thank you for completing the L.A. Metro Volunteer Showcase! You have successfully verified your identity and volunteer status. You can now use this credential to verify your identity and volunteer status at L.A. Metro facilities and events.
 
 Character Details
-    Name: California Resident
-    Role: L.A. Metro Volunteer
+    Name: Dale Randall
+    Role: California Resident
     Description: 
-        California Resident is a person who is interested in volunteering for L.A. Metro.
+        Dale Randall is a California Resident who is interested in volunteering for L.A. Metro.
 
-Page Title: Continue on California Resident
+Page Title: Continue on Dale Randall
 Page Content: 
-    Continue on with California Resident.
+    Continue on with Dale Randall.
 
 Page Title: Connect with L.A. Metro
 Page Content: 
-    Imagine, as California Resident, you are logged into the L.A. Metro website to apply for a volunteer position. You already proved your identity with your mDL credential, so you can now apply for a volunteer position. Receive an offer in your Verifiable Credential Wallet for a Volunteer Card.
+    Imagine, as Dale Randall, you are logged into the L.A. Metro website to apply for a volunteer position. You already proved your identity with your mDL credential, so you can now apply for a volunteer position. Receive an offer in your Verifiable Credential Wallet for a Volunteer Card.
 
 Page Title: Accept your volunteer card
 Page Content: 
     After verifying your identity with your mDL credential, L.A. Metro has confirmed your eligibility for volunteer positions. Your wallet now has a secure and private connection with L.A. Metro. You should have received an offer in your Verifiable Credential Wallet for a Volunteer Card. Review what they are sending, and choose 'Accept offer'.
+
+Credential Details:
+    Name: Dale Randall
+    Role: California Resident
+    Photo: temp
+    ISS: 20260101
+    EXP: 20280101
 
 Page Title: You're all set!
 Page Content: 

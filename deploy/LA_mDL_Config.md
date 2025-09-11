@@ -1,11 +1,12 @@
 Credentials:
 
 Name: california-dmv-mdl
-Version: 1.0
+Version: 1.4.4
 
 Attributes:
     Name: STRING
     Issued by: STRING
+    Photo: STRING
     DOB: DATE
     ISS: DATE
     EXP: DATE
@@ -20,27 +21,30 @@ Showcase Completion Details:
     Thank you for completing the California DMV mDL Showcase! You have successfully obtained your mobile driver's license credential. This credential can now be used to verify your identity for other services, including applying for volunteer positions at L.A. Metro.
 
 Character Details
-    Name: California Resident
-    Role: mDL Holder
+    Name: Dale Randall
+    Role: California Resident
     Description: 
-        California Resident who needs to obtain a mobile driver's license (mDL) from the California DMV. 
+        Dale Randall is a California Resident who needs to obtain a mobile driver's license (mDL) from the California DMV. 
 
-Page Title: Meet California Resident
+Page Title: Meet Dale Randall
 Page Content: 
-    Welcome to this showcase. Here you'll learn about digital credentials with California Resident.
-
-
-Page Title: Install Verifiable Credential Wallet
-Page Content: 
-    First, install a Verifiable Credential Wallet app onto your smartphone. Select the button below for instructions and the next step.
+    Welcome to this showcase. Here you'll learn about digital credentials with Dale Randall.
 
 Page Title: Connect with California DMV
 Page Content: 
-    Imagine, as California Resident, you are logged into the California DMV website. They want to offer you a Mobile Driver's License. Use your Verifiable Credential Wallet to scan the QR code from the website.
+    Imagine, as Dale Randall, you are logged into the California DMV website. They want to offer you a Mobile Driver's License. Use your Verifiable Credential Wallet to scan the QR code from the website.
 
 Page Title: Accept your mobile driver's license
 Page Content: 
     Your wallet now has a secure and private connection with California DMV. You should have received an offer in your Verifiable Credential Wallet for a Mobile Driver's License. Review what they are sending, and choose 'Accept offer'.
+
+Credential Details:
+    Name: Dale Randall
+    Issued by: California DMV
+    Photo: temp
+    DOB: 19620703
+    ISS: 20260101
+    EXP: 20280101
 
 Page Title: You're all set!
 Page Content: 
