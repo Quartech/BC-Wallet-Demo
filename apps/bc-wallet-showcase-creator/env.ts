@@ -28,10 +28,10 @@ if (typeof window !== 'undefined' && !window.__env) {
       eval(xhr.responseText)
     }
   } catch (error) {
-    // Fallback for local dev
+    // Fallback for local dev - use actual environment values
     window.__env = {
-      NEXT_PUBLIC_SHOWCASE_API_URL: process.env.NEXT_PUBLIC_SHOWCASE_API_URL || '',
-      NEXT_PUBLIC_WALLET_URL: process.env.NEXT_PUBLIC_WALLET_URL || '',
+      NEXT_PUBLIC_SHOWCASE_API_URL: process.env.NEXT_PUBLIC_SHOWCASE_API_URL || 'http://localhost:5005',
+      NEXT_PUBLIC_WALLET_URL: process.env.NEXT_PUBLIC_WALLET_URL || 'http://localhost:5002/digital-trust/showcase',
     }
   }
 }
@@ -43,6 +43,16 @@ const getEnv = (key: keyof NonNullable<Window['__env']>): string => {
   } else {
     const value = window.__env?.[key]
     if (!value) {
+      // In development, provide better error handling
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`Missing client env: ${key} in window.__env, using fallback`)
+        // Provide development fallbacks
+        const fallbacks = {
+          NEXT_PUBLIC_SHOWCASE_API_URL: 'http://localhost:5005',
+          NEXT_PUBLIC_WALLET_URL: 'http://localhost:5002/digital-trust/showcase',
+        }
+        return fallbacks[key] || ''
+      }
       throw new Error(`Missing client env: ${key} in window.__env`)
     }
     return value

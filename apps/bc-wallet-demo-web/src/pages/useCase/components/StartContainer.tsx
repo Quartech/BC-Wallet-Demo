@@ -1,24 +1,20 @@
-import React, {FC} from 'react'
+import { FC } from 'react'
 import { isMobile } from 'react-device-detect'
 import { FiLogOut } from 'react-icons/fi'
 import { useNavigate, useParams } from 'react-router-dom'
-import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
+
+// import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { motion } from 'framer-motion'
+
+import { showcaseServerBaseUrl } from '../../../api/BaseUrl'
 import { SmallButton } from '../../../components/SmallButton'
 import { fadeExit } from '../../../FramerAnimations'
 import { useAppDispatch } from '../../../hooks/hooks'
+import type { CredentialRequest, Persona, Showcase, Step, PresentationScenario } from '../../../slices/types'
 import { nextStep } from '../../../slices/useCases/useCasesSlice'
 import { basePath } from '../../../utils/BasePath'
-import { StarterInfo } from './StarterInfo'
-import { showcaseServerBaseUrl } from '../../../api/BaseUrl'
-import type {
-  CredentialRequest,
-  Persona,
-  Showcase,
-  Step,
-  PresentationScenario
-} from '../../../slices/types'
 import { getTenantIdFromPath } from '../../../utils/Helpers'
+import { StarterInfo } from './StarterInfo'
 
 export interface Props {
   showcase: Showcase
@@ -29,45 +25,39 @@ export interface Props {
 }
 
 export const StartContainer: FC<Props> = (props: Props) => {
-  const {
-    requestedCredentials,
-    currentStep,
-    showcase,
-    currentPersona,
-    scenario
-  } = props
+  const { requestedCredentials, currentStep, showcase, currentPersona, scenario } = props
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { slug } = useParams()
-  const tenantId = getTenantIdFromPath();
+  const tenantId = getTenantIdFromPath()
 
   const style = isMobile ? { minHeight: '85vh' } : { maxHeight: '940px' }
 
   const leave = () => {
-    trackSelfDescribingEvent({
-      event: {
-        schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-        data: {
-          action: 'leave',
-          path: `${currentPersona.role}_${slug}`,
-          step: currentStep.title,
-        },
-      },
-    })
+    // trackSelfDescribingEvent({
+    //   event: {
+    //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+    //     data: {
+    //       action: 'leave',
+    //       path: `${currentPersona.role}_${slug}`,
+    //       step: currentStep.title,
+    //     },
+    //   },
+    // })
     navigate(`${basePath}/${tenantId}/${showcase.slug}/${currentPersona.slug}/presentations`)
   }
 
   const next = () => {
-    trackSelfDescribingEvent({
-      event: {
-        schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-        data: {
-          action: 'start',
-          path: `${currentPersona.role}_${slug}`,
-          step: currentStep.title,
-        },
-      },
-    })
+    // trackSelfDescribingEvent({
+    //   event: {
+    //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+    //     data: {
+    //       action: 'start',
+    //       path: `${currentPersona.role}_${slug}`,
+    //       step: currentStep.title,
+    //     },
+    //   },
+    // })
     if (scenario?.steps.length === currentStep.order) {
       leave()
     } else {
@@ -95,11 +85,21 @@ export const StartContainer: FC<Props> = (props: Props) => {
           <button onClick={leave}>
             <FiLogOut className="ml-2 inline h-8 cursor-pointer" />
           </button>
-          <SmallButton onClick={next} text={scenario?.steps.length === currentStep.order ? 'COMPLETE' : 'START'} disabled={false} />
+          <SmallButton
+            onClick={next}
+            text={scenario?.steps.length === currentStep.order ? 'COMPLETE' : 'START'}
+            disabled={false}
+          />
         </div>
       </div>
       <div className="bg-bcgov-white dark:bg-bcgov-black hidden lg:flex lg:w-1/3 rounded-r-lg flex content-center p-4 select-none">
-        {currentStep.asset && <img className="p-8" src={`${showcaseServerBaseUrl}/assets/${currentStep.asset}/file`} alt={currentStep.title} />}
+        {currentStep.asset && (
+          <img
+            className="p-8"
+            src={`${showcaseServerBaseUrl}/assets/${currentStep.asset}/file`}
+            alt={currentStep.title}
+          />
+        )}
       </div>
     </motion.div>
   )

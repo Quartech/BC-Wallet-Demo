@@ -112,14 +112,14 @@ kubectl config set-context --current --namespace=showcase
 docker build -t crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-server -f ./apps/bc-wallet-demo-server/Dockerfile .
 docker push crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-server:latest
 
-docker build -t crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-web -f ./apps/bc-wallet-demo-web/Dockerfile .
-docker push crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-web:latest
-
 docker build -t crsharedakscluster.azurecr.io/quartech/showcase-manager-traction-adapter -f ./apps/bc-wallet-traction-adapter/Dockerfile .
 docker push crsharedakscluster.azurecr.io/quartech/showcase-manager-traction-adapter:latest
 
 docker build -t crsharedakscluster.azurecr.io/quartech/showcase-manager-api-server -f ./apps/bc-wallet-api-server/Dockerfile .
 docker push crsharedakscluster.azurecr.io/quartech/showcase-manager-api-server:latest
+
+docker build -t crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-web -f ./apps/bc-wallet-demo-web/Dockerfile .
+docker push crsharedakscluster.azurecr.io/quartech/showcase-manager-demo-web:latest
 
 docker build -t crsharedakscluster.azurecr.io/quartech/showcase-manager-showcase-creator -f ./apps/bc-wallet-showcase-creator/Dockerfile .
 docker push crsharedakscluster.azurecr.io/quartech/showcase-manager-showcase-creator:latest

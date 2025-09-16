@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
+
+// import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { motion, AnimatePresence } from 'framer-motion'
 import { track } from 'insights-js'
 import { startCase } from 'lodash'
+
 import { ActionCTA } from '../../../../components/ActionCTA'
 import { Modal } from '../../../../components/Modal'
 import { fade, fadeX } from '../../../../FramerAnimations'
@@ -12,13 +14,13 @@ import { useConnection } from '../../../../slices/connection/connectionSelectors
 import { useCredentials } from '../../../../slices/credentials/credentialsSelectors'
 import { setCredential } from '../../../../slices/credentials/credentialsSlice'
 import { issueCredential, issueDeepCredential } from '../../../../slices/credentials/credentialsThunks'
+import { useShowcases } from '../../../../slices/showcases/showcasesSelectors'
 import { useSocket } from '../../../../slices/socket/socketSelector'
+import { CredentialDefinition } from '../../../../slices/types'
 import { basePath } from '../../../../utils/BasePath'
+import { getTenantIdFromPath } from '../../../../utils/Helpers'
 import { FailedRequestModal } from '../../components/FailedRequestModal'
 import { StarterCredentials } from '../../components/StarterCredentials'
-import { CredentialDefinition } from '../../../../slices/types'
-import { useShowcases } from '../../../../slices/showcases/showcasesSelectors'
-import { getTenantIdFromPath } from '../../../../utils/Helpers'
 
 export interface Props {
   connectionId: string
@@ -35,22 +37,26 @@ export const AcceptCredentialAction: React.FC<Props> = (props: Props) => {
   const { isIssueCredentialLoading, error, issuedCredentials } = useCredentials()
   const { isDeepLink } = useConnection()
   const { message } = useSocket()
-  const credentialsIssued = useRef(false);
+  const credentialsIssued = useRef(false)
   const showcase = useShowcases()
-  const tenantId = getTenantIdFromPath();
+  const tenantId = getTenantIdFromPath()
 
   const showFailedRequestModal = () => setIsFailedRequestModalOpen(true)
   const closeFailedRequestModal = () => setIsFailedRequestModalOpen(false)
 
   const issuedCredentialsStartCase = issuedCredentials.map((name) => startCase(name))
-  const credentialsAccepted = credentialDefinitions.every(credentialDefinition => issuedCredentials.includes(credentialDefinition.name) || issuedCredentialsStartCase.includes(credentialDefinition.name))
+  const credentialsAccepted = credentialDefinitions.every(
+    (credentialDefinition) =>
+      issuedCredentials.includes(credentialDefinition.name) ||
+      issuedCredentialsStartCase.includes(credentialDefinition.name),
+  )
 
   useEffect(() => {
     if (credentialsIssued.current) {
-      return;
+      return
     }
 
-    credentialDefinitions.forEach(credentialDefinition => {
+    credentialDefinitions.forEach((credentialDefinition) => {
       if (isDeepLink) {
         dispatch(issueDeepCredential({ connectionId, credentialDefinition }))
       } else {
@@ -60,13 +66,13 @@ export const AcceptCredentialAction: React.FC<Props> = (props: Props) => {
         id: 'credential_issued',
       })
     })
-    credentialsIssued.current = true;
+    credentialsIssued.current = true
   }, [connectionId])
 
   const handleCredentialTimeout = () => {
     if (!isIssueCredentialLoading || !error) return
     setErrorMsg(
-      `The request timed out. We're sorry, but you're going to have to restart the demo. If this issue persists, please contact us.`
+      `The request timed out. We're sorry, but you're going to have to restart the demo. If this issue persists, please contact us.`,
     )
     setIsRejectedModalOpen(true)
   }
@@ -83,7 +89,7 @@ export const AcceptCredentialAction: React.FC<Props> = (props: Props) => {
     if (error) {
       const msg = error.message ?? 'Issue Credential Error'
       setErrorMsg(
-        `The request has failed with the following error: ${msg}. We're sorry, but you're going to have to restart. If this issue persists, please contact us. `
+        `The request has failed with the following error: ${msg}. We're sorry, but you're going to have to restart. If this issue persists, please contact us. `,
       )
       setIsRejectedModalOpen(true)
     }
@@ -126,14 +132,14 @@ export const AcceptCredentialAction: React.FC<Props> = (props: Props) => {
       <ActionCTA
         isCompleted={credentialsAccepted}
         onFail={() => {
-          trackSelfDescribingEvent({
-            event: {
-              schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-              data: {
-                action: 'cred_not_received',
-              },
-            },
-          })
+          // trackSelfDescribingEvent({
+          //   event: {
+          //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+          //     data: {
+          //       action: 'cred_not_received',
+          //     },
+          //   },
+          // })
           showFailedRequestModal()
         }}
       />

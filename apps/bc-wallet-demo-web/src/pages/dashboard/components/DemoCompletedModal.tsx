@@ -11,7 +11,7 @@ export interface Props {
 
 export const DemoCompletedModal: React.FC<Props> = ({ action, cancel }) => {
   const TITLE = 'Showcase Completed!'
-  const DESCRIPTION = 'Looking to leave some feedback? Take our survey and connect with us!'
+  const DESCRIPTION = 'Thank you for completing the showcase! Continue to the dashboard to explore more.'
 
   return (
     <AnimatePresence>
@@ -42,7 +42,7 @@ export const DemoCompletedModal: React.FC<Props> = ({ action, cancel }) => {
                   <div className="mt-2 text-sm">
                     <p>{DESCRIPTION}</p>
 
-                    <a
+                    {/* <a
                       href="https://submit.digital.gov.bc.ca/app/form/submit?f=d61da710-acc3-46fc-b692-111cf6e348de"
                       target="_blank"
                     >
@@ -53,12 +53,8 @@ export const DemoCompletedModal: React.FC<Props> = ({ action, cancel }) => {
                       >
                         {'Give feedback'}
                       </motion.button>
-                    </a>
+                    </a> */}
 
-                    <br />
-                    <a href="https://4sure.tech/">
-                      Based on code by <u>4sure Technology Solutions</u>
-                    </a>
                     <br />
                   </div>
                 </div>

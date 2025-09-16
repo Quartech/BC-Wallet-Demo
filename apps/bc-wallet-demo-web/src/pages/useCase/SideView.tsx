@@ -1,12 +1,14 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { isMobile } from 'react-device-detect'
 import { FiLogOut } from 'react-icons/fi'
+
 import { motion } from 'framer-motion'
+
 import { fadeDelay } from '../../FramerAnimations'
+import type { CredentialDefinition, RelyingParty, Step } from '../../slices/types'
 import { ConnectionCard } from './components/ConnectionCard'
 import { ProofCard } from './components/ProofCard'
 import { StepperCard } from './components/StepperCard'
-import type { CredentialDefinition, RelyingParty, Step } from '../../slices/types'
 
 export interface Props {
   steps: Step[]

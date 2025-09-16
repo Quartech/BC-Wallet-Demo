@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 
 import { startCase } from 'lodash'
 
+import { showcaseServerBaseUrl } from '../../../api/BaseUrl'
 import { CheckMark } from '../../../components/Checkmark'
 import { Loader } from '../../../components/Loader'
+import type { Attribute, CredentialRequest } from '../../../slices/types'
 import { isDataUrl } from '../../../utils/Helpers'
 import { getAttributesFromProof } from '../../../utils/ProofUtils'
-import { showcaseServerBaseUrl } from '../../../api/BaseUrl'
-import type { Attribute, CredentialRequest } from '../../../slices/types'
 
 export interface Props {
   entityName: string
@@ -16,9 +16,13 @@ export interface Props {
   proofReceived: boolean
 }
 
+//TODO: update this to use the showcase name from the showcase manager
+const RelayPartyPresentationNames = ['california-dmv-mdl-showcase', 'la-metro-volunteer-showcase']
+
 export const ProofAttributesCard: React.FC<Props> = ({ entityName, requestedCredentials, proof, proofReceived }) => {
   const [values, setValues] = useState<Attribute[]>([])
-
+  const route = window.location.pathname //e.g. /digital-trust/showcase/showcase-manager-tenant/california-dmv-mdl-showcase
+  const showcaseName = route.split('/')[4] //e.g. california-dmv-mdl-showcase
   const formatDate = (prop: string) => {
     const year = prop.substring(0, 4)
     const month = prop.substring(4, 6)
@@ -84,18 +88,19 @@ export const ProofAttributesCard: React.FC<Props> = ({ entityName, requestedCred
 
   return (
     <>
-    {(
-      <div className="flex flex-col bg-bcgov-white dark:bg-bcgov-black p-4 md:mb-8 rounded-lg shadow max-h-64 my-2 sm:max-h-72 md:max-h-96 overflow-auto">
-        <div className="flex-1-1 title">
-          <div className="flex flex-row">
-            <h1 className="flex flex-1 font-semibold dark:text-white">{entityName} would like to know:</h1>
-            <div className="flex-1-1 h-8 mb-2">{proofReceived ? <CheckMark /> : <Loader />}</div>
+      {
+        <div className="flex flex-col bg-bcgov-white dark:bg-bcgov-black p-4 md:mb-8 rounded-lg shadow max-h-64 my-2 sm:max-h-72 md:max-h-96 overflow-auto">
+          <div className="flex-1-1 title">
+            <div className="flex flex-row">
+              <h1 className="flex flex-1 font-semibold dark:text-white">
+                {RelayPartyPresentationNames.includes(showcaseName) ? 'L.A. Metro' : entityName} would like to know:
+              </h1>
+              <div className="flex-1-1 h-8 mb-2">{proofReceived ? <CheckMark /> : <Loader />}</div>
+            </div>
+            <div className="flex flex-col">{renderRequestedCreds}</div>
           </div>
-          <hr className="text-bcgov-lightgrey" />
         </div>
-        <div className="flex flex-col">{renderRequestedCreds}</div>
-      </div>
-    )}
+      }
     </>
   )
 }

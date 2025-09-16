@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+
 import { AnimatePresence } from 'framer-motion'
 import type { Socket } from 'socket.io-client'
 import { io } from 'socket.io-client'
+
 import { demoBackendBaseWsUrl, demoBackendSocketPath } from './api/BaseUrl'
 import { useAppDispatch } from './hooks/hooks'
 import { useAnalytics } from './hooks/useAnalytics'
@@ -18,8 +20,8 @@ import { fetchLastServerReset } from './slices/preferences/preferencesThunks'
 import { setMessage } from './slices/socket/socketSlice'
 import { AuthProvider } from './utils/AuthContext'
 import { basePath } from './utils/BasePath'
-import { ThemeProvider } from './utils/ThemeContext'
 import { getTenantIdFromPath } from './utils/Helpers'
+import { ThemeProvider } from './utils/ThemeContext'
 
 function App() {
   useAnalytics()
@@ -32,7 +34,7 @@ function App() {
 
   const localStorageTheme = localStorage.theme === 'dark'
   const windowMedia = !('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches
-  const tenantId = getTenantIdFromPath();
+  const tenantId = getTenantIdFromPath()
 
   useEffect(() => {
     if (localStorageTheme || windowMedia) {
@@ -79,7 +81,10 @@ function App() {
             <Route path={`${basePath}/${tenantId}/`} element={<LandingPage />} />
             <Route path={`${basePath}/${tenantId}/:slug`} element={<OnboardingPage />} />
             <Route path={`${basePath}/${tenantId}/:slug/:personaSlug/presentations`} element={<DashboardPage />} />
-            <Route path={`${basePath}/${tenantId}/:slug/:personaSlug/presentations/:scenarioSlug`} element={<UseCasePage />} />
+            <Route
+              path={`${basePath}/${tenantId}/:slug/:personaSlug/presentations/:scenarioSlug`}
+              element={<UseCasePage />}
+            />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </AnimatePresence>

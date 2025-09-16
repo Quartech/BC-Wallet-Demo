@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { trackPageView } from '@snowplow/browser-tracker'
+
+// import { trackPageView } from '@snowplow/browser-tracker'
 import { motion, AnimatePresence } from 'framer-motion'
+
 import { Loader } from '../../components/Loader'
 import { Modal } from '../../components/Modal'
 import { page } from '../../FramerAnimations'
@@ -10,32 +12,31 @@ import { useTitle } from '../../hooks/useTitle'
 import { useConnection } from '../../slices/connection/connectionSelectors'
 import { useProof } from '../../slices/proof/proofSelectors'
 import { useShowcases } from '../../slices/showcases/showcasesSelectors'
+import { clearShowcase } from '../../slices/showcases/showcasesSlice'
+import { fetchPersonaBySlug, fetchScenarioBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
+import type { PresentationScenario } from '../../slices/types'
 import { useUseCaseState } from '../../slices/useCases/useCasesSelectors'
 import { basePath } from '../../utils/BasePath'
-import { Section } from './Section'
-import { fetchPersonaBySlug, fetchScenarioBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
-import { clearShowcase } from '../../slices/showcases/showcasesSlice'
 import { usePersonaSlug, useScenarioSlug, useSlug } from '../../utils/SlugUtils'
 import { PageNotFound } from '../PageNotFound'
-import type { PresentationScenario } from '../../slices/types'
+import { Section } from './Section'
 
 export const UseCasePage: React.FC = () => {
   const dispatch = useAppDispatch()
   const { isLoading } = useUseCaseState()
   const { showcase, currentPersona, currentScenario } = useShowcases()
   const connection = useConnection()
-  const { proof, proofUrl } = useProof()
+  const { proof } = useProof()
   const showcaseSlug = useSlug()
   const personaSlug = usePersonaSlug()
   const scenarioSlug = useScenarioSlug()
-  const [scenario, setScenario] = useState<PresentationScenario>()
 
   const navigate = useNavigate()
-  useTitle(`${scenario?.name ?? 'Use case'} | BC Wallet Self-Sovereign Identity Demo`)
+  useTitle(`${currentScenario?.name ?? 'Use case'} | BC Wallet Self-Sovereign Identity Demo`)
 
-  useEffect(() => {
-    trackPageView()
-  }, [])
+  // useEffect(() => {
+  //   trackPageView()
+  // }, [])
 
   useEffect(() => {
     const load = async () => {

@@ -1,38 +1,37 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { trackPageView } from '@snowplow/browser-tracker'
+
+import { ScenarioType } from 'bc-wallet-openapi'
 import { motion, AnimatePresence } from 'framer-motion'
 import { track } from 'insights-js'
+
 import { Modal } from '../../components/Modal'
 import { page } from '../../FramerAnimations'
 import { useAppDispatch } from '../../hooks/hooks'
 import { useTitle } from '../../hooks/useTitle'
-import { useCredentials } from '../../slices/credentials/credentialsSelectors'
 import { usePreferences } from '../../slices/preferences/preferencesSelectors'
 import { setDemoCompleted } from '../../slices/preferences/preferencesSlice'
 import { useShowcases } from '../../slices/showcases/showcasesSelectors'
+import { clearShowcase } from '../../slices/showcases/showcasesSlice'
+import { fetchPersonaBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
+import type { Scenario } from '../../slices/types'
 import { basePath } from '../../utils/BasePath'
+import { usePersonaSlug, useSlug } from '../../utils/SlugUtils'
 import { Footer } from '../landing/components/Footer'
 import { NavBar } from '../landing/components/Navbar'
+import { PageNotFound } from '../PageNotFound'
 import { DemoCompletedModal } from './components/DemoCompletedModal'
 import { ProfileCard } from './components/ProfileCard'
 import { UseCaseContainer } from './components/UseCaseContainer'
-import { fetchPersonaBySlug, fetchShowcaseBySlug } from '../../slices/showcases/showcasesThunks'
-import { clearShowcase } from '../../slices/showcases/showcasesSlice'
-import { usePersonaSlug, useSlug } from '../../utils/SlugUtils'
-import { PageNotFound } from '../PageNotFound'
-import { ScenarioType } from 'bc-wallet-openapi'
-import type { Scenario } from '../../slices/types'
 
 export const DashboardPage: React.FC = () => {
   useTitle('Dashboard | BC Wallet Self-Sovereign Identity Demo')
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { revokableCredentials } = useCredentials()
   const showcaseSlug = useSlug()
   const personaSlug = usePersonaSlug()
   const { showcase, currentPersona } = useShowcases()
-  const { completedUseCaseSlugs, demoCompleted, completeCanceled, revocationEnabled, showHiddenUseCases } =  usePreferences()
+  const { completedUseCaseSlugs, demoCompleted, completeCanceled } = usePreferences()
   const [scenarios, setScenarios] = useState<Scenario[]>([])
 
   useEffect(() => {
@@ -43,25 +42,26 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     const load = async () => {
-        dispatch(clearShowcase())
-        await dispatch(fetchShowcaseBySlug(showcaseSlug))
-        await dispatch(fetchPersonaBySlug(personaSlug))
+      dispatch(clearShowcase())
+      await dispatch(fetchShowcaseBySlug(showcaseSlug))
+      await dispatch(fetchPersonaBySlug(personaSlug))
     }
     void load()
   }, [dispatch, showcaseSlug, personaSlug])
 
-  useEffect(() => {
-    trackPageView()
-  }, [])
+  // useEffect(() => {
+  //   trackPageView()
+  // }, [])
 
   useEffect(() => {
-      if (!showcase || !currentPersona) {
-        return
-      }
-      const result = showcase.scenarios.filter(scenario => scenario.persona.id === currentPersona.id && scenario.type === ScenarioType.Presentation )
-      setScenarios(result)
+    if (!showcase || !currentPersona) {
+      return
+    }
+    const result = showcase.scenarios.filter(
+      (scenario) => scenario.persona.id === currentPersona.id && scenario.type === ScenarioType.Presentation,
+    )
+    setScenarios(result)
   }, [showcase, currentPersona])
-
 
   if (showcase === undefined || currentPersona === undefined) {
     return <div>Loading...</div>
@@ -116,10 +116,10 @@ export const DashboardPage: React.FC = () => {
           <div className="flex flex-col lg:flex-row mb-auto">
             <div className="w-full lg:w-2/3 order-last lg:order-first">
               <UseCaseContainer
-                  showcase={showcase}
-                  completedUseCaseSlugs={completedUseCaseSlugs}
-                  currentPersona={currentPersona}
-                  scenarios={scenarios}
+                showcase={showcase}
+                completedUseCaseSlugs={completedUseCaseSlugs}
+                currentPersona={currentPersona}
+                scenarios={scenarios}
               />
               {/*FIXME we need to add support back for revocations*/}
               {/*{revokableCredentials.length > 0 && revocationEnabled && currentPersona.revocationInfo && (*/}
@@ -129,7 +129,7 @@ export const DashboardPage: React.FC = () => {
               {/*  />*/}
               {/*)}*/}
             </div>
-            <div className="flex flex-1 flex-col p-2 mx-2 dark:text-white">
+            <div className="flex flex-1 flex-col p-2 mx-2 align-middle dark:text-white">
               <ProfileCard currentPersona={currentPersona} />
             </div>
           </div>

@@ -1,0 +1,44 @@
+# Development Dockerfile for bc-wallet-demo-web with hot reloading
+FROM node:20-alpine
+
+# Install Maven and OpenJDK (needed for generate:models)
+RUN apk add --no-cache maven openjdk17
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files for dependency installation
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy packages directory (needed for workspace dependencies)
+COPY packages/ ./packages/
+
+# Copy the demo-web app
+COPY apps/bc-wallet-demo-web/ ./apps/bc-wallet-demo-web/
+
+# Install dependencies
+RUN pnpm install
+
+# Generate models (as seen in the production Dockerfile)
+RUN pnpm generate:models
+
+# Build the openapi package (dependency for the web app)
+RUN pnpm --filter bc-wallet-openapi build:clean
+
+# Set working directory to the demo-web app
+WORKDIR /app/apps/bc-wallet-demo-web
+
+# Expose the development server port
+EXPOSE 3000
+
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+ENV FAST_REFRESH=true
+
+# Start the development server with hot reloading
+CMD ["pnpm", "dev"]
