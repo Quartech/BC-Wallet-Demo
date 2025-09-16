@@ -1,0 +1,46 @@
+# Development Dockerfile for bc-wallet-showcase-creator with hot reloading
+FROM node:20-alpine
+
+# Install Maven and OpenJDK (needed for generate:models)
+RUN apk add --no-cache maven openjdk17 libc6-compat bash
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files for dependency installation
+COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.json tsconfig.build.json tsconfig.eslint.json ./
+
+# Copy packages directory (needed for workspace dependencies)
+COPY packages/ ./packages/
+
+# Copy the showcase-creator app
+COPY apps/bc-wallet-showcase-creator/ ./apps/bc-wallet-showcase-creator/
+
+# Install dependencies
+RUN pnpm install
+
+# Generate models (as seen in the production Dockerfile)
+RUN pnpm generate:models
+
+# Build the openapi package (dependency for the app)
+RUN pnpm --filter bc-wallet-openapi build:clean
+
+# Set working directory to the showcase-creator app
+WORKDIR /app/apps/bc-wallet-showcase-creator
+
+# Make env.sh executable
+RUN chmod +x ./env.sh
+
+# Expose the development server port
+EXPOSE 5003
+
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV WATCHPACK_POLLING=true
+
+# Generate __env.js file and start the Next.js development server with hot reloading
+CMD ["sh", "-c", "./env.sh && pnpm dev"]
