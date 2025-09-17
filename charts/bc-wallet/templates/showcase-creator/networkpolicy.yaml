@@ -1,0 +1,32 @@
+{{- if .Values.showcaseCreator.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "bc-wallet.fullname" . }}-showcase-creator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: showcase-creator
+    {{- include "bc-wallet.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: showcase-creator
+      {{- include "bc-wallet.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+{{- if and .Values.ingress.enabled .Values.showcaseCreator.networkPolicy.ingress.enabled }}
+      {{- with .Values.showcaseCreator.networkPolicy.ingress.namespaceSelector }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+{{ toYaml . | indent 14 }}
+      {{- end }}
+      {{- with .Values.showcaseCreator.networkPolicy.ingress.podSelector }}
+    - from:
+        - podSelector:
+            matchLabels:
+{{ toYaml . | indent 14 }}
+      {{- end }}
+    {{- end }}
+{{- end }}

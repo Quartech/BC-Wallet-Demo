@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bc-wallet.fullname" . }}-showcase-creator
+  labels:
+    app.kubernetes.io/component: showcase-creator
+    {{- include "bc-wallet.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.showcaseCreator.autoscaling.enabled }}
+  replicas: {{ .Values.showcaseCreator.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: showcase-creator
+      {{- include "bc-wallet.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.showcaseCreator.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/component: showcase-creator
+        {{- include "bc-wallet.labels" . | nindent 8 }}
+        {{- with .Values.showcaseCreator.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.showcaseCreator.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "bc-wallet.serviceAccountName" . }}
+      {{- with .Values.showcaseCreator.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-api
+          image: curlimages/curl:8.8.0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until curl -sfL "https://{{ include "bc-wallet.apiServer.host" . }}/tenants"; do
+                echo "Waiting for API to come online..."
+                sleep 5
+              done
+      containers:
+        - name: showcase-creator
+          {{- with .Values.showcaseCreator.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.showcaseCreator.image.repository }}:{{ .Values.showcaseCreator.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.showcaseCreator.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.showcaseCreator.service.port }}
+              protocol: TCP
+          env:
+            - name: NEXT_PUBLIC_WALLET_URL
+              value: "https://{{ include "bc-wallet.demoWeb.host" . }}/digital-trust/showcase"
+            - name: NEXT_PUBLIC_SHOWCASE_API_URL
+              value: "https://{{ include "bc-wallet.apiServer.host" . }}"
+            - name: OIDC_AUTH_URL
+              value: "https://{{ include "bc-wallet.showcaseCreator.host" . }}"
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: {{ .Values.showcaseCreator.service.port | quote }}
+            - name: NEXT_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.showcaseCreator.secretName | default "bc-wallet-secrets" | quote }}
+                  key: NEXT_AUTH_SECRET
+            - name: OIDC_DEFAULT_TENANT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.showcaseCreator.secretName | default "bc-wallet-secrets" | quote }}
+                  key: OIDC_DEFAULT_TENANT
+            - name: OIDC_TRUST_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.showcaseCreator.secretName | default "bc-wallet-secrets" | quote }}
+                  key: OIDC_TRUST_HOST
+          {{- with .Values.showcaseCreator.livenessProbe }}
+          {{- include "bc-wallet.renderEnvFrom" (list "showcaseCreator" .) | nindent 10 }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.showcaseCreator.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.showcaseCreator.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.showcaseCreator.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.showcaseCreator.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.showcaseCreator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.showcaseCreator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.showcaseCreator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

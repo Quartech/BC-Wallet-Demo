@@ -1,0 +1,122 @@
+import {
+  CredentialDefinitionImportRequest,
+  CredentialDefinitionImportRequestToJSONTyped,
+  CredentialSchema,
+  type CredentialSchemaImportRequest,
+  CredentialSchemaImportRequestToJSONTyped,
+  CredentialSchemaToJSONTyped,
+  instanceOfCredentialDefinitionImportRequest,
+  instanceOfCredentialSchema,
+  instanceOfCredentialSchemaImportRequest,
+  instanceOfIssuer,
+  Issuer,
+  IssuerToJSONTyped,
+} from 'bc-wallet-openapi'
+import { Connection, Sender } from 'rhea-promise'
+import { Service } from 'typedi'
+
+import { environment } from './environment'
+import { IAdapterClientApi, SendOptions } from './types'
+import { Action } from './types/adapter-backend'
+import { encryptBuffer } from './util/CypherUtil'
+
+@Service()
+export class AdapterClientApi implements IAdapterClientApi {
+  private readonly isInitComplete: Promise<void>
+  private isConnected = false
+  private connection: Connection
+  private sender!: Sender
+
+  public constructor() {
+    this.connection = new Connection(environment.messageBroker.getConnectionOptions())
+    this.isInitComplete = this.init() // concurrency protection
+  }
+
+  private async init(): Promise<void> {
+    if (this.isConnected) {
+      if (!this.sender?.isOpen() || !this.sender?.isRemoteOpen() || !this.connection.isOpen()) {
+        return Promise.reject(Error('AMQP connection or sender is no longer connected.'))
+      }
+      return
+    }
+    await this.connection.open()
+    this.sender = await this.connection.createSender({
+      target: { address: environment.messageBroker.MESSAGE_PROCESSOR_TOPIC },
+    })
+    this.isConnected = true
+  }
+
+  private async send(action: Action, payload: object, options: SendOptions): Promise<void> {
+    try {
+      await this.isInitComplete
+
+      const { accessTokenEnc, accessTokenNonce } = this.encryptAuthHeader(options.authHeader)
+      delete options['authHeader'] // IMPORTANT! - authHeader (the Bearer token) should not be transmitted unencrypted.
+
+      // Send the message
+      this.sender.send({
+        body: this.payloadToJson(payload),
+        application_properties: {
+          ...options,
+          action,
+          accessTokenEnc,
+          accessTokenNonce,
+        },
+      })
+      return
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
+
+  private payloadToJson(payload: object) {
+    if (instanceOfIssuer(payload)) {
+      return IssuerToJSONTyped(payload, false)
+    } else if (instanceOfCredentialSchemaImportRequest(payload)) {
+      return CredentialSchemaImportRequestToJSONTyped(payload, false)
+    } else if (instanceOfCredentialDefinitionImportRequest(payload)) {
+      return CredentialDefinitionImportRequestToJSONTyped(payload, false)
+    }
+    throw Error('Unknown payload type')
+  }
+
+  public async publishIssuer(issuer: Issuer, options: SendOptions): Promise<void> {
+    return this.send('publish.issuer-assets', issuer, options)
+  }
+
+  public async importCredentialSchema(
+    importRequest: CredentialDefinitionImportRequest,
+    options: SendOptions,
+  ): Promise<void> {
+    return this.send('import.cred-schema', importRequest, options)
+  }
+
+  public async importCredentialDefinition(
+    credentialDefinition: CredentialDefinitionImportRequest,
+    options: SendOptions,
+  ): Promise<void> {
+    return this.send('import.cred-def', credentialDefinition, options)
+  }
+
+  public async close(): Promise<void> {
+    if (!this.isConnected) return
+    if (this.sender) await this.sender.close()
+    await this.connection.close()
+    this.isConnected = false
+  }
+
+  private encryptAuthHeader(authHeader?: string): { accessTokenEnc: Buffer; accessTokenNonce: Buffer } {
+    if (!authHeader) {
+      return { accessTokenEnc: Buffer.alloc(0), accessTokenNonce: Buffer.alloc(0) }
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+
+    const result = encryptBuffer(Buffer.from(token, 'utf8'))
+
+    return {
+      accessTokenEnc: result.encrypted,
+      accessTokenNonce: result.nonce,
+    }
+  }
+}
