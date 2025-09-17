@@ -1,0 +1,164 @@
+'use client'
+
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
+import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { useTranslations } from 'next-intl'
+import Image from 'next/image'
+import type { Persona } from 'bc-wallet-openapi'
+import { Button } from '@/components/ui/button'
+import { useShowcaseStore } from '@/hooks/use-showcases-store'
+import { useRouter } from '@/i18n/routing'
+import { SortableStep } from '@/components/onboarding-screen/sortable-step'
+import { useOnboardingAdapter } from '@/hooks/use-onboarding-adapter'
+import { cn, baseUrl } from '@/lib/utils'
+import { Screen } from '@/types'
+import { useTenant } from '@/providers/tenant-provider'
+
+export const CreateOnboardingScreen = ({ showcaseSlug }: { showcaseSlug?: string }) => {
+  const t = useTranslations()
+  const {
+    steps,
+    selectedStep,
+    moveStep: handleMoveStep,
+    setStepState,
+    personas,
+    activePersonaId,
+    setActivePersonaId,
+    setSelectedStep,
+    activePersona,
+  } = useOnboardingAdapter(showcaseSlug)
+
+  const { selectedPersonaIds } = useShowcaseStore()
+  const router = useRouter()
+  const { tenantId } = useTenant();
+
+const parseId = (composedId: string) => {
+  const match = composedId.match(/^step-(\d+)-(\d+)$/);
+  if (!match) return null;
+  const stepIndex = parseInt(match[1], 10);
+  const scenarioIndex = parseInt(match[2], 10);
+  return { stepIndex, scenarioIndex };
+};
+
+const handleDragStart = (event: DragStartEvent) => {
+  const parsed = parseId(event.active.id as string);
+  if (!parsed) return;
+
+  const index = parsed.stepIndex;
+  setSelectedStep(index);
+};
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const from = parseId(event.active.id as string);
+    const to = parseId(event.over?.id as string);
+    if (!from || !to) return;
+
+    const oldIndex = from.stepIndex;
+    const newIndex = to.stepIndex;
+
+    if (oldIndex !== newIndex) {
+      handleMoveStep(oldIndex, newIndex);
+    }
+  }
+
+  return (
+    <div className="bg-background text-light-text dark:text-dark-text rounded-md border shadow-sm">
+      {selectedPersonaIds.length === 0 ? (
+        <div className="p-6 text-center">
+          <h3 className="text-lg font-semibold mb-4">No personas selected</h3>
+          <p className="mb-4">You need to select personas before creating onboarding steps.</p>
+          <Button variant="outlineAction" onClick={() => router.push(`/${tenantId}/showcases/create`)}>
+            {t('onboarding.go_back_to_select_personas')}
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div className="flex bg-gray-100 rounded-t-md border-b">
+            {personas.map((persona: Persona) => (
+              <div
+                key={persona.id}
+                onClick={() => setActivePersonaId(persona.id)}
+                className={cn(
+                  'w-full p-4 text-center cursor-pointer transition-colors duration-200',
+                  activePersonaId === persona.id
+                    ? 'bg-white dark:bg-gray-700 shadow-md'
+                    : 'bg-gray-200 dark:bg-dark-bg hover:bg-gray-100'
+                )}
+              >
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-gray-300 rounded-full mb-2 overflow-hidden">
+                    <Image
+                      src={
+                        persona.headshotImage?.id
+                          ? `${baseUrl}/${tenantId}/assets/${persona.headshotImage.id}/file`
+                          : '/assets/no-image.jpg'
+                      }
+                      alt={`${persona.name} || 'Character Headshot'`}
+                      width={50}
+                      height={50}
+                      className="rounded-full aspect-square object-cover"
+                    />
+                  </div>
+                  <div className="text-lg font-semibold">{persona.name}</div>
+                  <div className="text-sm text-gray-500">{persona.role}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-b w-full light-border dark:dark-border">
+            <div className="p-4">
+              <h2 className="text-base font-bold">{activePersona?.name || 'Persona'}'s Journey</h2>
+              <p className="text-xs">
+                {t('onboarding.editing_steps_message') || 'Configure the onboarding experience for this persona'}
+              </p>
+            </div>
+          </div>
+
+          <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <SortableContext items={steps.map((step) => step.id)} strategy={verticalListSortingStrategy}>
+              {steps.length === 0 ? (
+                <div className="text-center text-gray-500 p-4">
+                  <p>No steps created yet. Click the button below to add your first step.</p>
+                </div>
+              ) : (
+                steps.map((step, index) => (
+                  <div key={index} className="flex flex-row px-4 pt-4">
+                    <SortableStep
+                      selectedStep={selectedStep?.order === index ? selectedStep : null}
+                      myScreen={step as unknown as Screen}
+                      stepIndex={index + 1}
+                    />
+                  </div>
+                ))
+              )}
+
+              <DragOverlay>
+                {selectedStep !== null && selectedStep.order !== null && steps[selectedStep.order] && (
+                  <div className="top-1">
+                    <p>{steps[selectedStep.order].title}</p>
+                    <div className="highlight-container w-full flex flex-row justify-items-center items-center rounded p-3 unselected-item backdrop-blur">
+                      <p className="text-sm">{steps[selectedStep.order].description}</p>
+                    </div>
+                  </div>
+                )}
+              </DragOverlay>
+            </SortableContext>
+          </DndContext>
+
+          <div className="p-4 mt-auto border-t">
+            <Button
+              onClick={() => setStepState('creating-new')}
+              className="w-full"
+              variant="outlineAction"
+              disabled={activePersonaId === null}
+            >
+              {t('onboarding.add_step_label') || 'Add Step'}
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}

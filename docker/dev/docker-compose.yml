@@ -1,0 +1,195 @@
+services:
+  bc-wallet-api-server:
+    build:
+      context: ../..
+      dockerfile: ./apps/bc-wallet-api-server/Dockerfile
+    restart: unless-stopped
+    networks:
+      - public_net
+      - api_net
+      - messagebroker_net
+      - db_net
+    environment:
+      - PORT=5005
+      # - DATABASE_URL=${DATABASE_URL} uncomment when using URL instead of vars above
+      - SHOWCASE_DB_HOST=postgres
+      - SHOWCASE_DB_PORT=${SHOWCASE_DB_PORT:-5432}
+      - SHOWCASE_DB_USERNAME=${SHOWCASE_DB_USERNAME}
+      - SHOWCASE_DB_PASSWORD=${SHOWCASE_DB_PASSWORD}
+      - SHOWCASE_DB_NAME=${SHOWCASE_DB_NAME}
+      - RELYING_PARTY_NAME=${RELYING_PARTY_NAME}
+      - LOG_LEVEL=${LOG_LEVEL}
+      # cors settings
+      - CORS_DISABLED=${CORS_DISABLED}
+      - CORS_ALLOW_ORIGINS=${CORS_ALLOW_ORIGINS}
+      - CORS_ALLOW_METHODS=${CORS_ALLOW_METHODS}
+      - CORS_ALLOW_HEADERS=${CORS_ALLOW_HEADERS}
+      - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS}
+      # active-mq settings
+      - TRACTION_ADAPTER_MESSAGE_TOPIC=${TRACTION_ADAPTER_MESSAGE_TOPIC}
+      - AMQ_HOST=${AMQ_HOST:-rabbitmq}
+      - AMQ_PORT=${AMQ_PORT:-5672}
+      - AMQ_USERNAME=${AMQ_USERNAME}
+      - AMQ_PASSWORD=${AMQ_PASSWORD}
+      - AMQ_TRANSPORT=${AMQ_TRANSPORT:-tcp}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      # keycloak auth settings
+      - OIDC_ROOT_ISSUER_URL=${OIDC_ROOT_ISSUER_URL}
+      - OIDC_ROOT_CLIENT_ID=${OIDC_ROOT_CLIENT_ID}
+      - OIDC_ROOT_CLIENT_SECRET=${OIDC_ROOT_CLIENT_SECRET}
+    depends_on:
+      - postgres  # Ensure Postgres starts first
+    ports:
+      - "${PORT_SHOWCASE_API:-5005}:5005" # remove when using a proxy on the same docker network
+
+  bc-wallet-demo-server:
+    build:
+      context: ../..
+      dockerfile: ./apps/bc-wallet-demo-server/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - bc-wallet-api-server
+    networks:
+      - public_net
+    environment:
+      - PORT=5000
+      - LOG_LEVEL=${LOG_LEVEL}
+      # cors settings
+      - CORS_DISABLED=${CORS_DISABLED}
+      - CORS_ALLOW_ORIGINS=${CORS_ALLOW_ORIGINS}
+      - CORS_ALLOW_METHODS=${CORS_ALLOW_METHODS}
+      - CORS_ALLOW_HEADERS=${CORS_ALLOW_HEADERS}
+      - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS}
+      # Application-specific variables from .env
+      - TENANT_ID=${TRACTION_DEFAULT_TENANT_ID}
+      - WALLET_ID=${TRACTION_DEFAULT_WALLET_ID}
+      - API_KEY=${TRACTION_DEFAULT_API_KEY}
+      - TRACTION_API_URL=${TRACTION_API_URL}
+      - BASE_ROUTE=${DEMOWEB_BASE_ROUTE}
+      - TRACTION_WEBHOOK_SECRET=${TRACTION_WEBHOOK_SECRET}
+    ports:
+      - "${PORT_DEMO_API:-5004}:5000"
+
+  bc-wallet-traction-adapter:
+    build:
+      context: ../..
+      dockerfile: ./apps/bc-wallet-traction-adapter/Dockerfile
+    restart: unless-stopped
+    networks:
+      - messagebroker_net
+      - api_net
+
+    environment:
+      - PORT=3000
+      - LOG_LEVEL=${LOG_LEVEL}
+        # active-mq settings
+      - TRACTION_ADAPTER_MESSAGE_TOPIC=${TRACTION_ADAPTER_MESSAGE_TOPIC}
+      - AMQ_HOST=${AMQ_HOST:-rabbitmq}
+      - AMQ_PORT=${AMQ_PORT:-5672}
+      - AMQ_USERNAME=${AMQ_USERNAME}
+      - AMQ_PASSWORD=${AMQ_PASSWORD}
+      - AMQ_TRANSPORT=${AMQ_TRANSPORT:-tcp}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - TRACTION_DEFAULT_TENANT_ID=${TRACTION_DEFAULT_TENANT_ID}
+      - TRACTION_DEFAULT_WALLET_ID=${TRACTION_DEFAULT_WALLET_ID}
+      - TRACTION_DEFAULT_API_KEY=${TRACTION_DEFAULT_API_KEY}
+      - TRACTION_DEFAULT_API_URL=${TRACTION_API_URL}
+      - TRACTION_FIXED_SHOWCASE_API_URL=${TRACTION_FIXED_SHOWCASE_API_URL}
+
+    depends_on:
+      - rabbitmq  # Ensure RabbitMQ starts first
+
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    networks:
+      - db_net
+    environment:
+      - POSTGRES_USER=${SHOWCASE_DB_USERNAME}
+      - POSTGRES_PASSWORD=${SHOWCASE_DB_PASSWORD}
+      - POSTGRES_DB=${SHOWCASE_DB_NAME}
+    ports:
+      - "${SHOWCASE_DB_EXPOSED_PORT}:5432" # Expose Postgres port, default 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${SHOWCASE_DB_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:4-management  # Using RabbitMQ 4.x with management plugin
+    restart: unless-stopped
+    networks:
+      - messagebroker_net
+    environment:
+      - RABBITMQ_DEFAULT_USER=${AMQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${AMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_EXPOSED_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_EXPOSED_PORT:-15672}:15672"
+
+  bc-wallet-showcase-creator:
+    build:
+      context: ../..
+      dockerfile: ./apps/bc-wallet-showcase-creator/Dockerfile
+    restart: unless-stopped
+    networks:
+      - public_net
+    environment:
+      - NODE_ENV=production
+      - PORT=3050
+      - NEXT_PUBLIC_SHOWCASE_API_URL=${SHOWCASE_API_URL:-http://localhost:5005}
+      - NEXT_PUBLIC_WALLET_URL=${DEMOWEB_WALLET_URL:-https://localhost3366:/digital-trust/showcase}
+      - NEXT_AUTH_SECRET=${NEXT_AUTH_SECRET}
+      - OIDC_AUTH_URL=${OIDC_AUTH_URL}
+      - OIDC_DEFAULT_TENANT=${OIDC_DEFAULT_TENANT}
+      - OIDC_TRUST_HOST=${OIDC_TRUST_HOST:-true}
+    ports:
+      - "${PORT_SHOWCASE_CREATOR:-5003}:3050"
+    depends_on:
+      - bc-wallet-api-server
+
+  bc-wallet-demo-web:
+    build:
+      context: ../..
+      dockerfile: ./apps/bc-wallet-demo-web/Dockerfile
+    restart: unless-stopped
+    networks:
+      - public_net
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=${LOG_LEVEL}
+      - REACT_APP_SHOWCASE_API_URL=${DEMOWEB_SHOWCASE_API_URL:-http://localhost:5005}
+      - REACT_APP_DEMO_API_URL=${DEMOWEB_DEMO_API_URL:-http://localhost:5004}
+      - REACT_APP_WALLET_QR_CODE_URL=${REACT_APP_WALLET_QR_CODE_URL}
+      - REACT_APP_BASE_ROUTE=${DEMOWEB_BASE_ROUTE:-/digital-trust/showcase}
+      - REACT_APP_INSIGHTS_PROJECT_ID=${DEMOWEB_INSIGHTS_PROJECT_ID}
+      - SNOWPLOW_ENDPOINT=${DEMOWEB_SNOWPLOW_ENDPOINT:-spm.apps.gov.bc.ca}
+    ports:
+      - "${PORT_DEMO_WEB:-5002}:3000" # The Caddy container port was moved to 3000, requested by BC
+    depends_on:
+      - bc-wallet-demo-server
+      - bc-wallet-api-server
+
+volumes:
+  postgres_data:  # Named volume for Postgres data persistence
+
+networks:
+  public_net:
+    driver: bridge
+    name: public_net
+    internal: false
+  messagebroker_net:
+    driver: bridge
+    name: messagebroker_net
+    internal: false         # set to false to be able to expose for debugging
+  api_net: # for traction adapter -> api-server
+    driver: bridge
+    name: api_net
+    internal: false         # set to false to be able to expose for debugging
+  db_net:
+    driver: bridge
+    name: db_net
+    internal: false         # set to false to be able to expose for debugging

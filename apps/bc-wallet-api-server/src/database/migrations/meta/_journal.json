@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1744213708828,
+      "tag": "0000_bc-wallet-api",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1744706515544,
+      "tag": "0001_bc-wallet-api",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1744798874845,
+      "tag": "0002_bc-wallet-api",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1744896983917,
+      "tag": "0003_bc-wallet-api",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1747090254184,
+      "tag": "0004_bc-wallet-api",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1747333525632,
+      "tag": "0005_bc-wallet-api",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1752847843589,
+      "tag": "0006_bc-wallet-api",
+      "breakpoints": true
+    }
+  ]
+}
