@@ -48,6 +48,7 @@ export const ShowcaseCreate = () => {
       personas: [],
       tenantId: tenantId,
       bannerImage: '',
+      relyingPartyName: '',
     },
   })
 
@@ -127,6 +128,14 @@ export const ShowcaseCreate = () => {
               register={form.register}
               error={form.formState.errors.completionMessage?.message}
               placeholder="Add details here that should appear in the pop-up box that appears at completion of your showcase."
+            />
+            <FormTextInput
+              control={form.control}
+              label="Relying Party Name"
+              name="relyingPartyName"
+              register={form.register}
+              error={form.formState.errors.relyingPartyName?.message}
+              placeholder="Enter relying party name (optional)"
             />
           </div>
 
