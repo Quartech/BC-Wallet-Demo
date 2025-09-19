@@ -173,6 +173,7 @@ export interface Showcase {
   slug: string
   description: string
   scenarios: Array<IssuanceScenario | PresentationScenario>
+  relyingPartyName?: string
 }
 
 export interface Scenario {

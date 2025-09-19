@@ -25,6 +25,9 @@ export const UseCasePage: React.FC = () => {
   const dispatch = useAppDispatch()
   const { isLoading } = useUseCaseState()
   const { showcase, currentPersona, currentScenario } = useShowcases()
+  console.log('showcase', showcase);
+  console.log('currentScenario', currentScenario);
+  console.log('currentPersona', currentPersona);
   const connection = useConnection()
   const { proof } = useProof()
   const showcaseSlug = useSlug()

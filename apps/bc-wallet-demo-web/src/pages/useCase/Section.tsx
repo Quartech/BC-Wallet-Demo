@@ -185,7 +185,7 @@ export const Section: FC<Props> = (props: Props) => {
             key={'sideView'}
             steps={currentScenario.steps}
             currentStep={currentStep.order}
-            entity={currentScenario.relyingParty}
+            entity={{ name: showcase.relyingPartyName ?? '' }}
             showLeaveModal={showLeaveModal}
             requestedCredentials={requestedCredentials}
           />
@@ -201,14 +201,14 @@ export const Section: FC<Props> = (props: Props) => {
           >
             <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
               <StepInformation
-                title={currentStep.title}
+                title={currentStep.title} 
                 description={currentStep.description}
                 asset={currentStep.asset}
                 connection={connection}
                 actions={currentStep.actions}
                 proof={proof}
                 currentPersona={currentPersona}
-                verifier={currentScenario.relyingParty}
+                verifier={{ name: showcase.relyingPartyName ?? '' }}
               />
             </AnimatePresence>
             <div className="flex justify-between items-center">

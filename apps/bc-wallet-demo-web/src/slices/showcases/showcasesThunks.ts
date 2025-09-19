@@ -131,6 +131,7 @@ export const fetchShowcaseBySlug = createAsyncThunk(
         slug: response.data.showcase.slug,
         description: response.data.showcase.description,
         scenarios: scenarios as Array<PresentationScenario | IssuanceScenario>,
+        relyingPartyName: response.data.showcase.relyingPartyName,
       }
     } catch (e) {
       console.error(e)
