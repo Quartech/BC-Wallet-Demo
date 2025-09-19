@@ -20,6 +20,7 @@ export const showcases = pgTable(
     slug: text().notNull(),
     description: text().notNull(),
     completionMessage: text(),
+    relyingPartyName: text(),
     status: showcaseStatusPg().notNull().$type<ShowcaseStatus>(),
     hidden: boolean().notNull().default(false),
     bannerImage: uuid('banner_image').references(() => assets.id),
