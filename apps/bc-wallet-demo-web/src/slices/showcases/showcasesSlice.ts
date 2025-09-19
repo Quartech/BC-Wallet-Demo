@@ -1,5 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSlice } from '@reduxjs/toolkit'
+// eslint-disable-next-line import/no-cycle
 import {fetchPersonaBySlug, fetchScenarioBySlug, fetchShowcaseBySlug} from './showcasesThunks'
 import type {Persona, Scenario, Showcase} from '../types'
 

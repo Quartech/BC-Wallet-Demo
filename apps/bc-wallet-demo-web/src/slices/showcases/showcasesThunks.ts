@@ -12,6 +12,7 @@ import type {
 
 import { getCredentialDefinitionById } from '../../api/credentialDefinitionApi'
 import { getShowcaseBySlug } from '../../api/ShowcaseApi'
+// eslint-disable-next-line import/no-cycle
 import { RootState } from '../../store/configureStore'
 import type { Persona, Scenario, Showcase, IssuanceScenario, PresentationScenario } from '../types'
 
