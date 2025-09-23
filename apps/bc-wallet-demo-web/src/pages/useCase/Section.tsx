@@ -208,7 +208,7 @@ export const Section: FC<Props> = (props: Props) => {
                 actions={currentStep.actions}
                 proof={proof}
                 currentPersona={currentPersona}
-                verifier={{ name: showcase.relyingPartyName ?? '' }}
+                verifier={{ name: showcase.relyingPartyName ?? currentScenario.relyingParty.name }}
               />
             </AnimatePresence>
             <div className="flex justify-between items-center">
