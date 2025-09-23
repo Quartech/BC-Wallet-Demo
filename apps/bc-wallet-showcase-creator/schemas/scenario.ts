@@ -9,7 +9,7 @@ const predicateValueSchema = z.object({
   name: z.string(),
   type: z.enum([">=", "<=", "=", "none"]),
   value: z.number(),
-  restrictions: z.array(z.string()).optional(),
+  restrictions: z.array(z.string()),
 })
 
 const predicateSchema = z.object({

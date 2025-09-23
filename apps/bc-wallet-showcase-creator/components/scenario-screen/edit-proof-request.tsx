@@ -86,7 +86,7 @@ export const EditProofRequest = ({
             name: pred.name,
             type: pred.type as ">=" | "<=" | "=" | "none",
             value: pred.value,
-            restrictions: [credentialName]
+            restrictions: pred.restrictions || [credentialName]
           }))
         },
 

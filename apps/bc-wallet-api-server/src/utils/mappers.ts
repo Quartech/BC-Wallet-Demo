@@ -59,6 +59,90 @@ export const assetDTOFrom = (asset: Asset): AssetDTO => {
   }
 }
 
+export const userDTOFrom = (user: User): UserDTO => {
+  return {
+    ...user,
+    userName: user.userName ?? undefined,
+    issuer: user.issuer ?? undefined,
+    clientId: user.clientId ?? undefined,
+    createdAt: user.createdAt ?? undefined,
+    updatedAt: user.updatedAt ?? undefined,
+  }
+}
+
+export const personaDTOFrom = (persona: Persona): PersonaDTO => {
+  return {
+    ...persona,
+    headshotImage: persona.headshotImage ? assetDTOFrom(persona.headshotImage) : undefined,
+    bodyImage: persona.bodyImage ? assetDTOFrom(persona.bodyImage) : undefined,
+    hidden: persona.hidden,
+  }
+}
+
+export const stepActionDTOFrom = (stepAction: StepActionTypes): StepActionDTO => {
+  const baseAction = {
+    id: stepAction.id,
+    actionType: stepAction.actionType,
+    title: stepAction.title,
+    text: stepAction.text,
+    createdAt: stepAction.createdAt,
+    updatedAt: stepAction.updatedAt,
+  }
+
+  // Handle specific action types with their unique properties
+  switch (stepAction.actionType) {
+    case StepActionType.ACCEPT_CREDENTIAL: {
+      const action = stepAction as AcceptCredentialAction
+      const acceptCredentialDTO: AcceptCredentialActionDTO = {
+        ...baseAction,
+        credentialDefinitionId: action.credentialDefinitionId,
+        connectionId: action.connectionId || undefined,
+      }
+      return acceptCredentialDTO
+    }
+    case StepActionType.BUTTON: {
+      const action = stepAction as ButtonAction
+      const buttonDTO: ButtonActionDTO = {
+        ...baseAction,
+        goToStep: action.goToStep || undefined,
+      }
+      return buttonDTO
+    }
+    case StepActionType.ARIES_OOB: {
+      const action = stepAction as AriesOOBAction
+      const ariesOOBDTO: AriesOOBActionDTO = {
+        ...baseAction,
+        credentialDefinitionId: action.credentialDefinitionId,
+        proofRequest: action.proofRequest as AriesProofRequestDTO,
+      }
+      return ariesOOBDTO
+    }
+    case StepActionType.CHOOSE_WALLET: {
+      const chooseWalletDTO: ChooseWalletActionDTO = {
+        ...baseAction,
+      }
+      return chooseWalletDTO
+    }
+    case StepActionType.SETUP_CONNECTION: {
+      const setupConnectionDTO: SetupConnectionActionDTO = {
+        ...baseAction,
+      }
+      return setupConnectionDTO
+    }
+    default:
+      throw Error(`Unknown step action action type: ${stepAction['actionType']}`)
+  }
+}
+
+export const stepDTOFrom = (step: Step): StepDTO => {
+  return {
+    ...step,
+    actions: step.actions ? step.actions.map(stepActionDTOFrom) : [],
+    asset: step.asset ? assetDTOFrom(step.asset) : undefined,
+    subScenario: step.subScenario || undefined,
+  }
+}
+
 export const credentialSchemaDTOFrom = (credentialSchema: CredentialSchema): CredentialSchemaDTO => {
   return {
     ...credentialSchema,
@@ -142,79 +226,6 @@ export const scenarioDTOFrom = (scenario: Scenario): IssuanceScenarioDTO | Prese
   }
 }
 
-export const stepActionDTOFrom = (stepAction: StepActionTypes): StepActionDTO => {
-  const baseAction = {
-    id: stepAction.id,
-    actionType: stepAction.actionType,
-    title: stepAction.title,
-    text: stepAction.text,
-    createdAt: stepAction.createdAt,
-    updatedAt: stepAction.updatedAt,
-  }
-
-  // Handle specific action types with their unique properties
-  switch (stepAction.actionType) {
-    case StepActionType.ACCEPT_CREDENTIAL: {
-      const action = stepAction as AcceptCredentialAction
-      const acceptCredentialDTO: AcceptCredentialActionDTO = {
-        ...baseAction,
-        credentialDefinitionId: action.credentialDefinitionId,
-        connectionId: action.connectionId || undefined,
-      }
-      return acceptCredentialDTO
-    }
-    case StepActionType.BUTTON: {
-      const action = stepAction as ButtonAction
-      const buttonDTO: ButtonActionDTO = {
-        ...baseAction,
-        goToStep: action.goToStep || undefined,
-      }
-      return buttonDTO
-    }
-    case StepActionType.ARIES_OOB: {
-      const action = stepAction as AriesOOBAction
-      const ariesOOBDTO: AriesOOBActionDTO = {
-        ...baseAction,
-        credentialDefinitionId: action.credentialDefinitionId,
-        proofRequest: action.proofRequest as AriesProofRequestDTO,
-      }
-      return ariesOOBDTO
-    }
-    case StepActionType.CHOOSE_WALLET: {
-      const chooseWalletDTO: ChooseWalletActionDTO = {
-        ...baseAction,
-      }
-      return chooseWalletDTO
-    }
-    case StepActionType.SETUP_CONNECTION: {
-      const setupConnectionDTO: SetupConnectionActionDTO = {
-        ...baseAction,
-      }
-      return setupConnectionDTO
-    }
-    default:
-      throw Error(`Unknown step action action type: ${stepAction['actionType']}`)
-  }
-}
-
-export const stepDTOFrom = (step: Step): StepDTO => {
-  return {
-    ...step,
-    actions: step.actions ? step.actions.map(stepActionDTOFrom) : [],
-    asset: step.asset ? assetDTOFrom(step.asset) : undefined,
-    subScenario: step.subScenario || undefined,
-  }
-}
-
-export const personaDTOFrom = (persona: Persona): PersonaDTO => {
-  return {
-    ...persona,
-    headshotImage: persona.headshotImage ? assetDTOFrom(persona.headshotImage) : undefined,
-    bodyImage: persona.bodyImage ? assetDTOFrom(persona.bodyImage) : undefined,
-    hidden: persona.hidden,
-  }
-}
-
 export const showcaseDTOFrom = (showcase: Showcase): ShowcaseDTO => {
   return {
     ...showcase,
@@ -222,20 +233,10 @@ export const showcaseDTOFrom = (showcase: Showcase): ShowcaseDTO => {
     scenarios: showcase.scenarios.map(scenarioDTOFrom),
     bannerImage: showcase.bannerImage ? assetDTOFrom(showcase.bannerImage) : undefined,
     completionMessage: showcase.completionMessage || undefined,
+    relyingPartyName: showcase.relyingPartyName || undefined,
     createdBy: showcase.createdBy ? userDTOFrom(showcase.createdBy) : undefined,
     approvedBy: showcase.approvedBy ? userDTOFrom(showcase.approvedBy) : undefined,
     approvedAt: showcase.approvedAt || undefined,
-  }
-}
-
-export const userDTOFrom = (user: User): UserDTO => {
-  return {
-    ...user,
-    userName: user.userName ?? undefined,
-    issuer: user.issuer ?? undefined,
-    clientId: user.clientId ?? undefined,
-    createdAt: user.createdAt ?? undefined,
-    updatedAt: user.updatedAt ?? undefined,
   }
 }
 
