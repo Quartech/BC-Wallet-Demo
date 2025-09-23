@@ -8,20 +8,20 @@ import { assets } from '../schema'
 
 @Service()
 class AssetRepository implements RepositoryDefinition<Asset, NewAsset> {
-  constructor(private readonly databaseService: DatabaseService) {}
+  public constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(asset: NewAsset): Promise<Asset> {
+  public async create(asset: NewAsset): Promise<Asset> {
     const [result] = await (await this.databaseService.getConnection()).insert(assets).values(asset).returning()
 
     return result
   }
 
-  async delete(id: string): Promise<void> {
+  public async delete(id: string): Promise<void> {
     await this.findById(id)
     await (await this.databaseService.getConnection()).delete(assets).where(eq(assets.id, id))
   }
 
-  async update(id: string, asset: NewAsset): Promise<Asset> {
+  public async update(id: string, asset: NewAsset): Promise<Asset> {
     await this.findById(id)
     const [result] = await (await this.databaseService.getConnection())
       .update(assets)
@@ -32,7 +32,7 @@ class AssetRepository implements RepositoryDefinition<Asset, NewAsset> {
     return result
   }
 
-  async findById(id: string): Promise<Asset> {
+  public async findById(id: string): Promise<Asset> {
     const [result] = await (await this.databaseService.getConnection()).select().from(assets).where(eq(assets.id, id))
 
     if (!result) {
@@ -42,7 +42,7 @@ class AssetRepository implements RepositoryDefinition<Asset, NewAsset> {
     return result
   }
 
-  async findAll(): Promise<Asset[]> {
+  public async findAll(): Promise<Asset[]> {
     return (await this.databaseService.getConnection()).select().from(assets)
   }
 }

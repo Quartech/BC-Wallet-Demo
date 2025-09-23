@@ -1,8 +1,4 @@
-import {
-  AriesProofRequest,
-  ScenarioType,
-  StepActionType
-} from 'bc-wallet-openapi'
+import { AriesProofRequest, ScenarioType, StepActionType } from 'bc-wallet-openapi'
 
 export interface RevocationRecord {
   connectionId: string
@@ -177,6 +173,7 @@ export interface Showcase {
   slug: string
   description: string
   scenarios: Array<IssuanceScenario | PresentationScenario>
+  relyingPartyName?: string
 }
 
 export interface Scenario {

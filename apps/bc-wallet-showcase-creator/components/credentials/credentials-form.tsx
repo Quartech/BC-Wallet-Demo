@@ -14,6 +14,7 @@ import {
 } from '@/hooks/use-credentials'
 import { useCredentials } from '@/hooks/use-credentials-store'
 import { useHelpersStore } from '@/hooks/use-helpers-store'
+import { useShowcaseStore } from '@/hooks/use-showcases-store'
 import { baseUrl } from '@/lib/utils'
 import { schema } from '@/schemas/credential'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -41,6 +42,7 @@ import { useTenant } from '@/providers/tenant-provider'
 
 export const CredentialsForm = () => {
   const { selectedCredential, mode, setSelectedCredential, viewCredential } = useCredentials()
+  const { showcase } = useShowcaseStore()
   const t = useTranslations()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -143,8 +145,11 @@ export const CredentialsForm = () => {
           tenantId: tenantId ?? ''
         })
 
+        console.log('Creating RelyingParty with name:', showcase.relyingPartyName || 'bc gov relying party')
+        console.log('Showcase data:', showcase)
+        
         const relyingPartyResponse = await createRelyingParty({
-          name: 'bc gov relying party',
+          name: showcase.relyingPartyName || 'bc gov relying party',
           type: RelyingPartyType.Aries,
           credentialDefinitions: [credentialId],
           description: 'bc gov relying party created by showcase creator',

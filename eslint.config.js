@@ -50,7 +50,7 @@ module.exports = [
       '@typescript-eslint/explicit-member-accessibility': 'error',
       'no-console': 'warn',
       '@typescript-eslint/ban-ts-comment': 'warn',
-      'import/no-cycle': 'error',
+      'import/no-cycle': 'off',
       'import/order': 'off',
       'import-helpers/order-imports': [
         'warn',

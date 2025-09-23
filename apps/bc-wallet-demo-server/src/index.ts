@@ -70,8 +70,8 @@ const run = async () => {
     })
 
     // Redirect QR code scans for installing bc wallet to the apple or google play store
-    const androidUrl = 'https://play.google.com/store/apps/details?id=ca.bc.gov.BCWallet'
-    const appleUrl = 'https://apps.apple.com/us/app/bc-wallet/id1587380443'
+    const androidUrl = 'https://github.com/Quartech/quartech-wallet/releases' // TODO: update this
+    const appleUrl = 'https://github.com/Quartech/quartech-wallet/releases' // TODO: update this
     app.get(`${baseRoute}/qr`, (req, res) => {
       console.debug(`${req.method} ${req.path} - handling QR redirect`)
       const appleMatchers = [/iPhone/i, /iPad/i, /iPod/i]

@@ -10,12 +10,12 @@ import AssetRepository from './AssetRepository'
 
 @Service()
 class PersonaRepository implements RepositoryDefinition<Persona, NewPersona> {
-  constructor(
+  public constructor(
     private readonly databaseService: DatabaseService,
     private readonly assetRepository: AssetRepository,
   ) {}
 
-  async create(persona: NewPersona): Promise<Persona> {
+  public async create(persona: NewPersona): Promise<Persona> {
     const headshotImageResult = persona.headshotImage
       ? await this.assetRepository.findById(persona.headshotImage)
       : null
@@ -47,12 +47,12 @@ class PersonaRepository implements RepositoryDefinition<Persona, NewPersona> {
     }
   }
 
-  async delete(id: string): Promise<void> {
+  public async delete(id: string): Promise<void> {
     await this.findById(id)
     await (await this.databaseService.getConnection()).delete(personas).where(eq(personas.id, id))
   }
 
-  async update(id: string, persona: NewPersona): Promise<Persona> {
+  public async update(id: string, persona: NewPersona): Promise<Persona> {
     await this.findById(id)
     const headshotImageResult = persona.headshotImage
       ? await this.assetRepository.findById(persona.headshotImage)
@@ -87,7 +87,7 @@ class PersonaRepository implements RepositoryDefinition<Persona, NewPersona> {
     }
   }
 
-  async findById(id: string, tx?: Tx): Promise<Persona> {
+  public async findById(id: string, tx?: Tx): Promise<Persona> {
     const result = await (tx ?? (await this.databaseService.getConnection())).query.personas.findFirst({
       where: eq(personas.id, id),
       with: {
@@ -103,7 +103,7 @@ class PersonaRepository implements RepositoryDefinition<Persona, NewPersona> {
     return result
   }
 
-  async findAll(): Promise<Persona[]> {
+  public async findAll(): Promise<Persona[]> {
     return (await this.databaseService.getConnection()).query.personas.findMany({
       with: {
         headshotImage: true,
@@ -112,7 +112,7 @@ class PersonaRepository implements RepositoryDefinition<Persona, NewPersona> {
     })
   }
 
-  async findIdBySlug(slug: string): Promise<string> {
+  public async findIdBySlug(slug: string): Promise<string> {
     const result = await (
       await this.databaseService.getConnection()
     ).query.personas.findFirst({

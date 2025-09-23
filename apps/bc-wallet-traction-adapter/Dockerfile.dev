@@ -1,0 +1,57 @@
+# Development Dockerfile for bc-wallet-traction-adapter with hot reloading
+FROM node:20-bookworm
+
+# Install Maven and OpenJDK (needed for generate:models)
+RUN apt-get update && \
+    apt-get install -y maven build-essential python3 make g++ openjdk-17-jdk && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files for dependency installation
+COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.json tsconfig.build.json tsconfig.eslint.json ./
+
+# Copy apps tsconfig-base.json (needed for TypeScript compilation)
+COPY apps/tsconfig-base.json apps/
+
+# Copy packages directory (needed for workspace dependencies)
+COPY packages/ ./packages/
+
+# Copy the traction-adapter app
+COPY apps/bc-wallet-traction-adapter/ ./apps/bc-wallet-traction-adapter/
+
+# Install dependencies
+RUN pnpm install
+
+# Generate models (as seen in the production Dockerfile)
+RUN pnpm generate:models
+
+# Build openapi packages (dependencies for the app)
+RUN pnpm --filter bc-wallet-openapi build:clean
+RUN pnpm --filter bc-wallet-traction-openapi build:clean
+
+# Build the traction-adapter package to ensure all dependencies are available
+RUN pnpm --filter bc-wallet-traction-adapter build:clean
+
+# Set working directory to the traction-adapter app
+WORKDIR /app/apps/bc-wallet-traction-adapter
+
+# Create a basic .env file for development
+RUN echo "NODE_ENV=development" > .env.development && \
+    echo "PORT=3000" >> .env.development && \
+    echo "LOG_LEVEL=debug" >> .env.development
+
+# Expose the development server port
+EXPOSE 3000
+
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV PORT=3000
+
+# Start the development server with hot reloading using ts-node-dev
+CMD ["pnpm", "dev"]

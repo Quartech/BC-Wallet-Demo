@@ -129,6 +129,7 @@ const ShowcaseRequestSchema = z.object({
   status: z.nativeEnum(ShowcaseStatus),
   hidden: z.boolean(),
   tenantId: z.string().min(1),
+  relyingPartyName: z.string().optional(),
 })
 
 export const PublishEdit = () => {
@@ -151,6 +152,7 @@ export const PublishEdit = () => {
       scenarios: [],
       personas: [],
       tenantId,
+      relyingPartyName: '',
     },
   })
 
@@ -163,6 +165,7 @@ export const PublishEdit = () => {
       scenarios: showcase.scenarios || [],
       status: 'ACTIVE',
       tenantId,
+      relyingPartyName: showcase.relyingPartyName || '',
     })
   }, [form, showcase])
 
@@ -213,6 +216,14 @@ export const PublishEdit = () => {
               register={form.register}
               error={form.formState.errors.completionMessage?.message}
               placeholder="Add details here that should appear in the pop-up box that appears at completion of your showcase."
+            />
+            <FormTextInput
+              control={form.control}
+              label="Relying Party Name"
+              name="relyingPartyName"
+              register={form.register}
+              error={form.formState.errors.relyingPartyName?.message}
+              placeholder="Enter relying party name (optional)"
             />
             <div className="space-y-2">
               <BannerImageUpload

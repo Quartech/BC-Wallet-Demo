@@ -16,7 +16,6 @@ import {  ShowcaseRequest, ShowcaseResponse, ShowcaseStatus } from 'bc-wallet-op
 import { toast } from 'sonner'
 import { useShowcase, useUpdateShowcase } from '@/hooks/use-showcases'
 import { useShowcaseStore } from '@/hooks/use-showcases-store'
-import { useHelpersStore } from '@/hooks/use-helpers-store'
 import { showcaseRequestFormData } from '@/schemas/showcase'
 import { BannerImageUpload } from './showcase-image-upload'
 import { showcaseToShowcaseRequest } from '@/lib/parsers'
@@ -46,6 +45,7 @@ export const ShowcaseEdit = ({ slug }: { slug: string }) => {
       personas: [],
       tenantId: '',
       bannerImage: '',
+      relyingPartyName: ''
     },
   })
 
@@ -56,6 +56,7 @@ export const ShowcaseEdit = ({ slug }: { slug: string }) => {
   useEffect(() => {
     if (showcaseData && !isShowcaseLoading) {
       const { showcase } = showcaseData
+      console.log('showcase', showcase);
 
       if (!showcase) {
         return
@@ -78,6 +79,7 @@ export const ShowcaseEdit = ({ slug }: { slug: string }) => {
         personas: showcase.personas?.map((p) => (typeof p === 'string' ? p : p.id)) || [],
         tenantId: showcase.tenantId || '',
         bannerImage: directBannerId,
+        relyingPartyName: showcase.relyingPartyName || '',
       })
 
       setIsLoading(false)
@@ -156,6 +158,14 @@ export const ShowcaseEdit = ({ slug }: { slug: string }) => {
               register={form.register}
               error={form.formState.errors.completionMessage?.message}
               placeholder="Add details here that should appear in the pop-up box that appears at completion of your showcase."
+            />
+            <FormTextInput
+              control={form.control}
+              label="Relying Party Name"
+              name="relyingPartyName"
+              register={form.register}
+              error={form.formState.errors.relyingPartyName?.message}
+              placeholder="Enter relying party name (optional)"
             />
 
             <div className="flex items-center space-x-2 mt-2">

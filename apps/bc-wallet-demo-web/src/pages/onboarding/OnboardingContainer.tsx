@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { FiLogOut } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+
+// import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { StepActionType } from 'bc-wallet-openapi'
-import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { AnimatePresence, motion } from 'framer-motion'
+
 import { showcaseServerBaseUrl } from '../../api/BaseUrl'
 import { Modal } from '../../components/Modal'
 import { fadeDelay, fadeExit } from '../../FramerAnimations'
@@ -14,24 +16,24 @@ import { clearConnection } from '../../slices/connection/connectionSlice'
 import { useCredentials } from '../../slices/credentials/credentialsSelectors'
 import { clearCredentials } from '../../slices/credentials/credentialsSlice'
 import { completeOnboarding, setScenario } from '../../slices/onboarding/onboardingSlice'
-import { basePath } from '../../utils/BasePath'
-import { getTenantIdFromPath, isConnected, isCredIssued } from '../../utils/Helpers'
-import { setOnboardingProgress } from '../../utils/OnboardingUtils'
-import { OnboardingBottomNav } from './components/OnboardingBottomNav'
-import { PersonaContent } from './components/PersonaContent'
-import { PickPersona } from './steps/PickPersona'
-import { SetupCompleted } from './steps/SetupCompleted'
-import { StepView } from './steps/StepView'
+import { useShowcases } from '../../slices/showcases/showcasesSelectors'
 import type {
   AcceptCredentialStepAction,
   CredentialDefinition,
   IssuanceScenario,
   Persona,
   Scenario,
-  Step
+  Step,
 } from '../../slices/types'
-import { useShowcases } from '../../slices/showcases/showcasesSelectors'
 import { fetchWallets } from '../../slices/wallets/walletsThunks'
+import { basePath } from '../../utils/BasePath'
+import { getTenantIdFromPath, isConnected } from '../../utils/Helpers'
+import { setOnboardingProgress } from '../../utils/OnboardingUtils'
+import { OnboardingBottomNav } from './components/OnboardingBottomNav'
+import { PersonaContent } from './components/PersonaContent'
+import { PickPersona } from './steps/PickPersona'
+import { SetupCompleted } from './steps/SetupCompleted'
+import { StepView } from './steps/StepView'
 
 export interface Props {
   scenarios: Scenario[]
@@ -65,7 +67,7 @@ export const OnboardingContainer: FC<Props> = ({
   const [credentialsAccepted, setCredentialsAccepted] = useState<boolean>(false)
   const [connectionCompleted, setConnectionCompleted] = useState<boolean>(false)
   const showcase = useShowcases()
-  const tenantId = getTenantIdFromPath();
+  const tenantId = getTenantIdFromPath()
 
   const credDefParts = credentialDefinitions && credentialDefinitions[0]?.identifier?.split(':')
   const credName = credDefParts && credDefParts[credDefParts.length - 1]
@@ -92,12 +94,18 @@ export const OnboardingContainer: FC<Props> = ({
       return
     }
 
-    const credDefs = currentStep.actions.flatMap(action => (action as AcceptCredentialStepAction).credentialDefinitions ?? []);
-    setCredentialDefinitions(credDefs);
+    const credDefs = currentStep.actions.flatMap(
+      (action) => (action as AcceptCredentialStepAction).credentialDefinitions ?? [],
+    )
+    setCredentialDefinitions(credDefs)
   }, [currentStep])
 
   useEffect((): void => {
-    setCredentialsAccepted(credentialDefinitions?.every((credentialDefinition: CredentialDefinition) => issuedCredentials.includes(credName)))
+    setCredentialsAccepted(
+      credentialDefinitions?.every((credentialDefinition: CredentialDefinition) =>
+        issuedCredentials.includes(credName),
+      ),
+    )
   }, [credentialDefinitions, issuedCredentials])
 
   useEffect((): void => {
@@ -110,16 +118,16 @@ export const OnboardingContainer: FC<Props> = ({
 
   useEffect(() => {
     const handleTabClose = () => {
-      trackSelfDescribingEvent({
-        event: {
-          schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-          data: {
-            action: 'leave_on_tab_close',
-            path: currentPersona?.role.toLowerCase(),
-            step: currentStep,
-          },
-        },
-      })
+      // trackSelfDescribingEvent({
+      //   event: {
+      //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+      //     data: {
+      //       action: 'leave_on_tab_close',
+      //       path: currentPersona?.role.toLowerCase(),
+      //       step: currentStep,
+      //     },
+      //   },
+      // })
       dispatch({ type: 'demo/RESET' })
     }
 
@@ -133,32 +141,36 @@ export const OnboardingContainer: FC<Props> = ({
   const isBackDisabled: boolean = !currentStep || currentStep.order === 1
   const isForwardDisabled: boolean = (() => {
     if (!currentStep) {
-      return true;
+      return true
     }
-    const hasSetupConnection = !!currentStep?.actions?.some((action) => action.actionType === StepActionType.SetupConnection);
+    const hasSetupConnection = !!currentStep?.actions?.some(
+      (action) => action.actionType === StepActionType.SetupConnection,
+    )
     if (hasSetupConnection && !connectionCompleted) {
-      return true;
+      return true
     }
-    const hasAcceptCredential = !!currentStep?.actions?.some((action) => action.actionType === StepActionType.AcceptCredential);
+    const hasAcceptCredential = !!currentStep?.actions?.some(
+      (action) => action.actionType === StepActionType.AcceptCredential,
+    )
     if (hasAcceptCredential && (!credentialsAccepted || credentialDefinitions.length === 0)) {
-      return true;
+      return true
     }
-    return false;
+    return false
   })()
 
   const nextOnboardingPage = async (): Promise<void> => {
     const nextStep = currentScenario?.steps[currentStep !== undefined ? currentStep.order : 0]
     if (nextStep) {
-      trackSelfDescribingEvent({
-        event: {
-          schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-          data: {
-            action: 'next',
-            path: currentPersona?.role.toLowerCase(),
-            step: currentStep,
-          },
-        },
-      })
+      // trackSelfDescribingEvent({
+      //   event: {
+      //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+      //     data: {
+      //       action: 'next',
+      //       path: currentPersona?.role.toLowerCase(),
+      //       step: currentStep,
+      //     },
+      //   },
+      // })
 
       setOnboardingProgress(dispatch, nextStep)
     }
@@ -167,16 +179,16 @@ export const OnboardingContainer: FC<Props> = ({
   const prevOnboardingPage = async (): Promise<void> => {
     const prevStep = currentStep && currentScenario?.steps[currentStep.order - 2]
     if (prevStep) {
-      trackSelfDescribingEvent({
-        event: {
-          schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-          data: {
-            action: 'back',
-            path: currentPersona?.role.toLowerCase(),
-            step: currentStep,
-          },
-        },
-      })
+      // trackSelfDescribingEvent({
+      //   event: {
+      //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+      //     data: {
+      //       action: 'back',
+      //       path: currentPersona?.role.toLowerCase(),
+      //       step: currentStep,
+      //     },
+      //   },
+      // })
 
       setOnboardingProgress(dispatch, prevStep)
     }
@@ -188,56 +200,54 @@ export const OnboardingContainer: FC<Props> = ({
     }
 
     const nextIndex = currentScenario.steps
-        .slice(currentStep.order - 1)
-        .findIndex(step =>
-            step.actions?.some(action => action.actionType === StepActionType.AcceptCredential)
-        )
+      .slice(currentStep.order - 1)
+      .findIndex((step) => step.actions?.some((action) => action.actionType === StepActionType.AcceptCredential))
 
     if (!nextIndex || nextIndex === -1) {
       return nextOnboardingPage()
     }
 
     const target = nextIndex + currentStep.order
-    const nextStep =  currentScenario.steps[target < currentScenario.steps.length ? target : currentStep.order]
-    trackSelfDescribingEvent({
-      event: {
-        schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-        data: {
-          action: 'skip get credential',
-          path: currentPersona?.role.toLowerCase(),
-          step: currentStep,
-        },
-      },
-    })
+    const nextStep = currentScenario.steps[target < currentScenario.steps.length ? target : currentStep.order]
+    // trackSelfDescribingEvent({
+    //   event: {
+    //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+    //     data: {
+    //       action: 'skip get credential',
+    //       path: currentPersona?.role.toLowerCase(),
+    //       step: currentStep,
+    //     },
+    //   },
+    // })
     setOnboardingProgress(dispatch, nextStep)
   }
 
   const getComponentToRender = (): ReactElement => {
     if (!currentStep || currentStep.order === 1) {
       return (
-          <PickPersona
-              currentPersona={currentPersona}
-              personas={scenarios.map((scenario) => scenario.persona)}
-              title={currentStep?.title}
-              text={currentStep?.description}
-              personaDescription={currentPersona?.description}
-          />
+        <PickPersona
+          currentPersona={currentPersona}
+          personas={scenarios.map((scenario) => scenario.persona)}
+          title={currentStep?.title}
+          text={currentStep?.description}
+          personaDescription={currentPersona?.description}
+        />
       )
     } else if (currentScenario?.steps.length === currentStep.order) {
       return <SetupCompleted title={currentStep.title} text={currentStep.description} />
     } else {
       return (
-          <StepView
-              title={currentStep.title}
-              text={currentStep.description}
-              actions={currentStep.actions}
-              nextStep={nextOnboardingPage}
-              skipGetCredential={skipGetCredential}
-              connectionState={connectionState}
-              invitationUrl={invitationUrl}
-              connectionId={connectionId}
-              issuerName={(currentScenario as IssuanceScenario)?.issuer.name}
-          />
+        <StepView
+          title={currentStep.title}
+          text={currentStep.description}
+          actions={currentStep.actions}
+          nextStep={nextOnboardingPage}
+          skipGetCredential={skipGetCredential}
+          connectionState={connectionState}
+          invitationUrl={invitationUrl}
+          connectionId={connectionId}
+          issuerName={(currentScenario as IssuanceScenario)?.issuer.name}
+        />
       )
     }
   }
@@ -247,14 +257,14 @@ export const OnboardingContainer: FC<Props> = ({
       return <PersonaContent persona={currentPersona} />
     } else if (currentStep.asset) {
       return (
-          <motion.img
-              variants={fadeExit}
-              initial="hidden"
-              animate="show"
-              exit="exit"
-              className="p-4"
-              src={`${showcaseServerBaseUrl}/assets/${currentStep.asset}/file`}
-          />
+        <motion.img
+          variants={fadeExit}
+          initial="hidden"
+          animate="show"
+          exit="exit"
+          className="p-4"
+          src={`${showcaseServerBaseUrl}/assets/${currentStep.asset}/file`}
+        />
       )
     }
   }
@@ -281,51 +291,51 @@ export const OnboardingContainer: FC<Props> = ({
   const closeLeave = () => setLeaveModal(false)
 
   const leave = () => {
-    trackSelfDescribingEvent({
-      event: {
-        schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-        data: {
-          action: 'leave',
-          path: currentPersona?.role.toLowerCase(),
-          step: currentStep,
-        },
-      },
-    })
+    // trackSelfDescribingEvent({
+    //   event: {
+    //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+    //     data: {
+    //       action: 'leave',
+    //       path: currentPersona?.role.toLowerCase(),
+    //       step: currentStep,
+    //     },
+    //   },
+    // })
     navigate(`${basePath}/${tenantId}/${showcase.showcase?.slug}`)
     dispatch(fetchWallets())
     dispatch({ type: 'demo/RESET' })
   }
 
   return (
-      <motion.div
-          className="flex flex-row h-full justify-between bg-white dark:bg-bcgov-darkgrey rounded-lg p-2 w-full sxl:w-5/6 shadow"
-          style={style}
-      >
-        <div className={`flex flex-col justify-items-end ${isMobile ? 'w-full' : 'w-2/3'} px-8`}>
-          <div className="w-full">
-            <motion.button onClick={showLeaveModal} variants={fadeDelay}>
-              <FiLogOut className="inline h-12 cursor-pointer dark:text-white" />
-            </motion.button>
-          </div>
-          <AnimatePresence mode="wait">{getComponentToRender()}</AnimatePresence>
-          <OnboardingBottomNav
-              currentStep={currentStep?.order}
-              maxSteps={currentScenario?.steps.length}
-              addOnboardingStep={nextOnboardingPage}
-              removeOnboardingStep={prevOnboardingPage}
-              forwardDisabled={isForwardDisabled}
-              backDisabled={isBackDisabled}
-              onboardingCompleted={onboardingCompleted}
-          />
+    <motion.div
+      className="flex flex-row h-full justify-between bg-white dark:bg-bcgov-darkgrey rounded-lg p-2 w-full sxl:w-5/6 shadow"
+      style={style}
+    >
+      <div className={`flex flex-col justify-items-end ${isMobile ? 'w-full' : 'w-2/3'} px-8`}>
+        <div className="w-full">
+          <motion.button onClick={showLeaveModal} variants={fadeDelay}>
+            <FiLogOut className="inline h-12 cursor-pointer dark:text-white" />
+          </motion.button>
         </div>
-        {!isMobile && (
-            <div className="bg-bcgov-white dark:bg-bcgov-black hidden lg:flex lg:w-1/3 rounded-r-lg flex-col justify-center h-full select-none">
-              <AnimatePresence mode="wait">{getImageToRender()}</AnimatePresence>
-            </div>
-        )}
-        {leaveModal && (
-            <Modal title={LEAVE_MODAL_TITLE} description={LEAVE_MODAL_DESCRIPTION} onOk={leave} onCancel={closeLeave} />
-        )}
-      </motion.div>
+        <AnimatePresence mode="wait">{getComponentToRender()}</AnimatePresence>
+        <OnboardingBottomNav
+          currentStep={currentStep?.order}
+          maxSteps={currentScenario?.steps.length}
+          addOnboardingStep={nextOnboardingPage}
+          removeOnboardingStep={prevOnboardingPage}
+          forwardDisabled={isForwardDisabled}
+          backDisabled={isBackDisabled}
+          onboardingCompleted={onboardingCompleted}
+        />
+      </div>
+      {!isMobile && (
+        <div className="bg-bcgov-white dark:bg-bcgov-black hidden lg:flex lg:w-1/3 rounded-r-lg flex-col justify-center h-full select-none">
+          <AnimatePresence mode="wait">{getImageToRender()}</AnimatePresence>
+        </div>
+      )}
+      {leaveModal && (
+        <Modal title={LEAVE_MODAL_TITLE} description={LEAVE_MODAL_DESCRIPTION} onOk={leave} onCancel={closeLeave} />
+      )}
+    </motion.div>
   )
 }

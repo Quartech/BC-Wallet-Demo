@@ -2,7 +2,7 @@ services:
   bc-wallet-api-server:
     build:
       context: ../..
-      dockerfile: ./apps/bc-wallet-api-server/Dockerfile
+      dockerfile: ./apps/bc-wallet-api-server/Dockerfile.dev
     restart: unless-stopped
     networks:
       - public_net
@@ -10,6 +10,7 @@ services:
       - messagebroker_net
       - db_net
     environment:
+      - NODE_ENV=development
       - PORT=5005
       # - DATABASE_URL=${DATABASE_URL} uncomment when using URL instead of vars above
       - SHOWCASE_DB_HOST=postgres
@@ -38,20 +39,31 @@ services:
       - OIDC_ROOT_CLIENT_ID=${OIDC_ROOT_CLIENT_ID}
       - OIDC_ROOT_CLIENT_SECRET=${OIDC_ROOT_CLIENT_SECRET}
     depends_on:
-      - postgres  # Ensure Postgres starts first
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     ports:
-      - "${PORT_SHOWCASE_API:-5005}:5005" # remove when using a proxy on the same docker network
+      - '${PORT_SHOWCASE_API:-5005}:5005' # remove when using a proxy on the same docker network
+    volumes:
+      # Mount source code for hot reloading
+      - ../../apps/bc-wallet-api-server/src:/app/apps/bc-wallet-api-server/src
+      - ../../apps/bc-wallet-api-server/drizzle.config.ts:/app/apps/bc-wallet-api-server/drizzle.config.ts
+      - ../../packages:/app/packages
+      # Exclude node_modules to avoid conflicts
+      - /app/apps/bc-wallet-api-server/node_modules
 
   bc-wallet-demo-server:
     build:
       context: ../..
-      dockerfile: ./apps/bc-wallet-demo-server/Dockerfile
+      dockerfile: ./apps/bc-wallet-demo-server/Dockerfile.dev
     restart: unless-stopped
     depends_on:
       - bc-wallet-api-server
     networks:
       - public_net
     environment:
+      - NODE_ENV=development
       - PORT=5000
       - LOG_LEVEL=${LOG_LEVEL}
       # cors settings
@@ -68,18 +80,26 @@ services:
       - BASE_ROUTE=${DEMOWEB_BASE_ROUTE}
       - TRACTION_WEBHOOK_SECRET=${TRACTION_WEBHOOK_SECRET}
     ports:
-      - "${PORT_DEMO_API:-5004}:5000"
+      - '${PORT_DEMO_API:-5004}:5000'
+    volumes:
+      # Mount source code for hot reloading
+      - ../../apps/bc-wallet-demo-server/src:/app/apps/bc-wallet-demo-server/src
+      - ../../apps/bc-wallet-demo-server/config:/app/apps/bc-wallet-demo-server/config
+      - ../../packages:/app/packages
+      # Exclude node_modules to avoid conflicts
+      - /app/apps/bc-wallet-demo-server/node_modules
 
   bc-wallet-traction-adapter:
     build:
       context: ../..
-      dockerfile: ./apps/bc-wallet-traction-adapter/Dockerfile
+      dockerfile: ./apps/bc-wallet-traction-adapter/Dockerfile.dev
     restart: unless-stopped
     networks:
       - messagebroker_net
       - api_net
 
     environment:
+      - NODE_ENV=development
       - PORT=3000
       - LOG_LEVEL=${LOG_LEVEL}
         # active-mq settings
@@ -97,7 +117,17 @@ services:
       - TRACTION_FIXED_SHOWCASE_API_URL=${TRACTION_FIXED_SHOWCASE_API_URL}
 
     depends_on:
-      - rabbitmq  # Ensure RabbitMQ starts first
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      # Mount source code for hot reloading
+      - ../../apps/bc-wallet-traction-adapter/src:/app/apps/bc-wallet-traction-adapter/src
+      - ../../packages:/app/packages
+      # Exclude node_modules to avoid conflicts
+      - /app/apps/bc-wallet-traction-adapter/node_modules
+      # Exclude built packages to avoid conflicts with container builds
+      - /app/packages/bc-wallet-openapi/dist
+      - /app/packages/bc-wallet-traction-openapi/dist
 
   postgres:
     image: postgres:16
@@ -109,17 +139,17 @@ services:
       - POSTGRES_PASSWORD=${SHOWCASE_DB_PASSWORD}
       - POSTGRES_DB=${SHOWCASE_DB_NAME}
     ports:
-      - "${SHOWCASE_DB_EXPOSED_PORT}:5432" # Expose Postgres port, default 5432
+      - '${SHOWCASE_DB_EXPOSED_PORT}:5432' # Expose Postgres port, default 5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${SHOWCASE_DB_USERNAME}"]
+      test: ['CMD', 'pg_isready', '-U', '${SHOWCASE_DB_USERNAME}']
       interval: 10s
       timeout: 5s
       retries: 5
 
   rabbitmq:
-    image: rabbitmq:4-management  # Using RabbitMQ 4.x with management plugin
+    image: rabbitmq:4-management # Using RabbitMQ 4.x with management plugin
     restart: unless-stopped
     networks:
       - messagebroker_net
@@ -127,54 +157,86 @@ services:
       - RABBITMQ_DEFAULT_USER=${AMQ_USERNAME}
       - RABBITMQ_DEFAULT_PASS=${AMQ_PASSWORD}
     ports:
-      - "${RABBITMQ_EXPOSED_PORT:-5672}:5672"
-      - "${RABBITMQ_MGMT_EXPOSED_PORT:-15672}:15672"
+      - '${RABBITMQ_EXPOSED_PORT:-5672}:5672'
+      - '${RABBITMQ_MGMT_EXPOSED_PORT:-15672}:15672'
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   bc-wallet-showcase-creator:
     build:
       context: ../..
-      dockerfile: ./apps/bc-wallet-showcase-creator/Dockerfile
+      dockerfile: ./apps/bc-wallet-showcase-creator/Dockerfile.dev
     restart: unless-stopped
     networks:
       - public_net
     environment:
-      - NODE_ENV=production
-      - PORT=3050
+      - NODE_ENV=development
+      - PORT=5003
       - NEXT_PUBLIC_SHOWCASE_API_URL=${SHOWCASE_API_URL:-http://localhost:5005}
-      - NEXT_PUBLIC_WALLET_URL=${DEMOWEB_WALLET_URL:-https://localhost3366:/digital-trust/showcase}
-      - NEXT_AUTH_SECRET=${NEXT_AUTH_SECRET}
-      - OIDC_AUTH_URL=${OIDC_AUTH_URL}
-      - OIDC_DEFAULT_TENANT=${OIDC_DEFAULT_TENANT}
+      - NEXT_PUBLIC_WALLET_URL=${DEMOWEB_WALLET_URL:-http://localhost:5002/digital-trust/showcase}
+      - NEXT_AUTH_SECRET=${NEXT_AUTH_SECRET:-dev-secret-key}
+      - OIDC_AUTH_URL=${OIDC_AUTH_URL:-http://localhost:8080/auth/realms/dev}
+      - OIDC_DEFAULT_TENANT=${OIDC_DEFAULT_TENANT:-dev-tenant}
       - OIDC_TRUST_HOST=${OIDC_TRUST_HOST:-true}
+      # Hot reloading environment variables
+      - WATCHPACK_POLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
     ports:
-      - "${PORT_SHOWCASE_CREATOR:-5003}:3050"
+      - '${PORT_SHOWCASE_CREATOR:-5003}:5003' # Next.js dev server port
+    volumes:
+      # Mount source code for hot reloading
+      - ../../apps/bc-wallet-showcase-creator/src:/app/apps/bc-wallet-showcase-creator/src
+      - ../../apps/bc-wallet-showcase-creator/public:/app/apps/bc-wallet-showcase-creator/public
+      - ../../apps/bc-wallet-showcase-creator/app:/app/apps/bc-wallet-showcase-creator/app
+      - ../../apps/bc-wallet-showcase-creator/components:/app/apps/bc-wallet-showcase-creator/components
+      - ../../apps/bc-wallet-showcase-creator/lib:/app/apps/bc-wallet-showcase-creator/lib
+      - ../../apps/bc-wallet-showcase-creator/styles:/app/apps/bc-wallet-showcase-creator/styles
+      - ../../packages:/app/packages
+      # Exclude node_modules and .next to avoid conflicts
+      - /app/apps/bc-wallet-showcase-creator/node_modules
+      - /app/apps/bc-wallet-showcase-creator/.next
     depends_on:
       - bc-wallet-api-server
 
   bc-wallet-demo-web:
     build:
       context: ../..
-      dockerfile: ./apps/bc-wallet-demo-web/Dockerfile
+      dockerfile: ./apps/bc-wallet-demo-web/Dockerfile.dev
     restart: unless-stopped
     networks:
       - public_net
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - LOG_LEVEL=${LOG_LEVEL}
+      - REACT_APP_WALLET_URL=${DEMOWEB_WALLET_URL:-http://localhost:5002/digital-trust/showcase}
       - REACT_APP_SHOWCASE_API_URL=${DEMOWEB_SHOWCASE_API_URL:-http://localhost:5005}
       - REACT_APP_DEMO_API_URL=${DEMOWEB_DEMO_API_URL:-http://localhost:5004}
-      - REACT_APP_WALLET_QR_CODE_URL=${REACT_APP_WALLET_QR_CODE_URL}
+      - REACT_APP_WALLET_QR_CODE_URL=${DEMOWEB_WALLET_QR_CODE_URL}
       - REACT_APP_BASE_ROUTE=${DEMOWEB_BASE_ROUTE:-/digital-trust/showcase}
       - REACT_APP_INSIGHTS_PROJECT_ID=${DEMOWEB_INSIGHTS_PROJECT_ID}
       - SNOWPLOW_ENDPOINT=${DEMOWEB_SNOWPLOW_ENDPOINT:-spm.apps.gov.bc.ca}
+      # Hot reloading environment variables
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - FAST_REFRESH=true
     ports:
-      - "${PORT_DEMO_WEB:-5002}:3000" # The Caddy container port was moved to 3000, requested by BC
+      - '${PORT_DEMO_WEB:-5002}:3000' # React dev server port
+    volumes:
+      # Mount source code for hot reloading
+      - ../../apps/bc-wallet-demo-web/src:/app/apps/bc-wallet-demo-web/src
+      - ../../apps/bc-wallet-demo-web/public:/app/apps/bc-wallet-demo-web/public
+      - ../../packages:/app/packages
+      # Exclude node_modules to avoid conflicts
+      - /app/apps/bc-wallet-demo-web/node_modules
     depends_on:
       - bc-wallet-demo-server
       - bc-wallet-api-server
 
 volumes:
-  postgres_data:  # Named volume for Postgres data persistence
+  postgres_data: # Named volume for Postgres data persistence
 
 networks:
   public_net:
@@ -184,12 +246,12 @@ networks:
   messagebroker_net:
     driver: bridge
     name: messagebroker_net
-    internal: false         # set to false to be able to expose for debugging
+    internal: false # set to false to be able to expose for debugging
   api_net: # for traction adapter -> api-server
     driver: bridge
     name: api_net
-    internal: false         # set to false to be able to expose for debugging
+    internal: false # set to false to be able to expose for debugging
   db_net:
     driver: bridge
     name: db_net
-    internal: false         # set to false to be able to expose for debugging
+    internal: false # set to false to be able to expose for debugging

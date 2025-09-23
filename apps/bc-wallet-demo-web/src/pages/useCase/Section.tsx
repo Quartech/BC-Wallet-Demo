@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { useNavigate } from 'react-router-dom'
 
-import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
+// import { trackSelfDescribingEvent } from '@snowplow/browser-tracker'
 import { StepActionType } from 'bc-wallet-openapi'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -49,7 +49,7 @@ export const Section: FC<Props> = (props: Props) => {
 
   const showLeaveModal = () => setLeaveModal(true)
   const closeLeave = () => setLeaveModal(false)
-  const tenantId = getTenantIdFromPath();
+  const tenantId = getTenantIdFromPath()
 
   const currentStep = currentScenario.steps[stepCount]
 
@@ -60,16 +60,16 @@ export const Section: FC<Props> = (props: Props) => {
 
   const leave = () => {
     setIsExiting(true)
-    trackSelfDescribingEvent({
-      event: {
-        schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-        data: {
-          action: 'leave',
-          path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
-          step: currentStep.title,
-        },
-      },
-    })
+    // trackSelfDescribingEvent({
+    //   event: {
+    //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+    //     data: {
+    //       action: 'leave',
+    //       path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
+    //       step: currentStep.title,
+    //     },
+    //   },
+    // })
     navigate(`${basePath}/${tenantId}/${showcase.slug}/${currentPersona.slug}/presentations`)
     dispatch({ type: 'clearUseCase' })
     dispatch(resetStep())
@@ -94,16 +94,16 @@ export const Section: FC<Props> = (props: Props) => {
       dispatch({ type: 'clearUseCase' })
       navigate(`${basePath}/${tenantId}/${showcase.slug}/${currentPersona.slug}/presentations`)
       dispatch(resetStep())
-      trackSelfDescribingEvent({
-        event: {
-          schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-          data: {
-            action: 'usecase_completed',
-            path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
-            step: currentStep.title,
-          },
-        },
-      })
+      // trackSelfDescribingEvent({
+      //   event: {
+      //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+      //     data: {
+      //       action: 'usecase_completed',
+      //       path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
+      //       step: currentStep.title,
+      //     },
+      //   },
+      // })
     }
   }, [completed, dispatch, currentScenario])
 
@@ -132,16 +132,16 @@ export const Section: FC<Props> = (props: Props) => {
       isConnectionCompleted
     ) {
       next()
-      trackSelfDescribingEvent({
-        event: {
-          schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-          data: {
-            action: 'next',
-            path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
-            step: currentStep.title,
-          },
-        },
-      })
+      // trackSelfDescribingEvent({
+      //   event: {
+      //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+      //     data: {
+      //       action: 'next',
+      //       path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
+      //       step: currentStep.title,
+      //     },
+      //   },
+      // })
     }
   }, [connection.state])
 
@@ -185,7 +185,7 @@ export const Section: FC<Props> = (props: Props) => {
             key={'sideView'}
             steps={currentScenario.steps}
             currentStep={currentStep.order}
-            entity={currentScenario.relyingParty}
+            entity={{ name: showcase.relyingPartyName ?? currentScenario.relyingParty.name }}
             showLeaveModal={showLeaveModal}
             requestedCredentials={requestedCredentials}
           />
@@ -208,23 +208,23 @@ export const Section: FC<Props> = (props: Props) => {
                 actions={currentStep.actions}
                 proof={proof}
                 currentPersona={currentPersona}
-                verifier={currentScenario.relyingParty}
+                verifier={{ name: showcase.relyingPartyName ?? currentScenario.relyingParty.name }}
               />
             </AnimatePresence>
             <div className="flex justify-between items-center">
               <BackButton
                 onClick={() => {
                   prev()
-                  trackSelfDescribingEvent({
-                    event: {
-                      schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-                      data: {
-                        action: 'back',
-                        path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
-                        step: currentStep.title,
-                      },
-                    },
-                  })
+                  // trackSelfDescribingEvent({
+                  //   event: {
+                  //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+                  //     data: {
+                  //       action: 'back',
+                  //       path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
+                  //       step: currentStep.title,
+                  //     },
+                  //   },
+                  // })
                 }}
                 disabled={isBackDisabled}
               />
@@ -235,16 +235,16 @@ export const Section: FC<Props> = (props: Props) => {
                   text="NEXT"
                   onClick={() => {
                     next()
-                    trackSelfDescribingEvent({
-                      event: {
-                        schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
-                        data: {
-                          action: 'next',
-                          path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
-                          step: currentStep.title,
-                        },
-                      },
-                    })
+                    // trackSelfDescribingEvent({
+                    //   event: {
+                    //     schema: 'iglu:ca.bc.gov.digital/action/jsonschema/1-0-0',
+                    //     data: {
+                    //       action: 'next',
+                    //       path: `${currentPersona?.role.toLowerCase()}_${currentScenario.slug}`,
+                    //       step: currentStep.title,
+                    //     },
+                    //   },
+                    // })
                   }}
                   disabled={isForwardDisabled}
                   data-cy="use-case-next"

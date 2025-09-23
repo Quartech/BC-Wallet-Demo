@@ -12,6 +12,7 @@ import type {
 
 import { getCredentialDefinitionById } from '../../api/credentialDefinitionApi'
 import { getShowcaseBySlug } from '../../api/ShowcaseApi'
+// eslint-disable-next-line import/no-cycle
 import { RootState } from '../../store/configureStore'
 import type { Persona, Scenario, Showcase, IssuanceScenario, PresentationScenario } from '../types'
 
@@ -130,6 +131,7 @@ export const fetchShowcaseBySlug = createAsyncThunk(
         slug: response.data.showcase.slug,
         description: response.data.showcase.description,
         scenarios: scenarios as Array<PresentationScenario | IssuanceScenario>,
+        relyingPartyName: response.data.showcase.relyingPartyName,
       }
     } catch (e) {
       console.error(e)

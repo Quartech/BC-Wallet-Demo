@@ -21,6 +21,7 @@ import {
 } from 'bc-wallet-openapi'
 
 export const showcaseToShowcaseRequest = (showcase: Showcase): ShowcaseRequest & { slug: string } => {
+  console.log('showcase', showcase);
   return {
     name: showcase.name,
     tenantId: showcase.tenantId,
@@ -32,12 +33,14 @@ export const showcaseToShowcaseRequest = (showcase: Showcase): ShowcaseRequest &
     status: showcase.status,
     hidden: showcase.hidden,
     completionMessage: showcase.completionMessage,
+    relyingPartyName: showcase.relyingPartyName,
   }
 }
 
 export const issuanceScenarioToIssuanceScenarioRequest = (
   issuanceScenario: IssuanceScenario,
 ): IssuanceScenarioRequest & { slug: string } => {
+  console.log('issuanceScenario', issuanceScenario);
   return {
     name: issuanceScenario.name,
     slug: issuanceScenario.slug,

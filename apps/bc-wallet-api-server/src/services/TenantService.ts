@@ -225,7 +225,7 @@ class TenantService {
     const RelyingParty = process.env.RELYING_PARTY_NAME
     // Create default relying party
     const newRelyingParty = await this.relyingPartyRepository.create({
-      name: RelyingParty ? `${RelyingParty} for ${tenant.id}` : `Default Relying Party for ${tenant.id}`,
+      name: RelyingParty ? `Default Relying Party for ${RelyingParty}` : `Default Relying Party for ${tenant.id}`,
       type: RelyingPartyType.ARIES,
       description: 'Default relying party created automatically',
       credentialDefinitions: [],
